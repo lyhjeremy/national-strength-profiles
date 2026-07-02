@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>National Strength Profiles — who's good at what in athletics</title>
+<meta name="description" content="Which countries are good at which track & field disciplines? Clustering 43 nations by WA-point strength reveals five clear archetypes — and the USA as a lone superpower.">
+<style>
+  :root{ --paper:#FBF8F1; --ink:#1a1a2e; --wine:#7a1f2b; --gold:#D4A537; --mut:#6b6656; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:Georgia,'Times New Roman',serif;line-height:1.65;}
+  .band{background:var(--ink);color:var(--paper);}
+  .band svg{display:block;width:100%;height:auto}
+  .wrap{max-width:760px;margin:0 auto;padding:0 22px;}
+  header .wrap{padding:38px 22px 30px;}
+  h1{font-size:2.1rem;line-height:1.15;margin:0 0 10px;}
+  .sub{font-size:1.15rem;color:#d8d2c4;margin:0;font-style:italic;}
+  h2{font-size:1.5rem;margin:2.4em 0 .5em;border-bottom:2px solid var(--gold);padding-bottom:.2em;}
+  p{margin:.8em 0;} .lead{font-size:1.18rem;}
+  figure{margin:1.6em 0;text-align:center;}
+  figure img{max-width:100%;height:auto;border:1px solid #e7e0d0;border-radius:6px;background:#fff;}
+  figcaption{font-size:.92rem;color:var(--mut);margin-top:.5em;font-style:italic;}
+  .stats{display:flex;flex-wrap:wrap;gap:14px;margin:1.4em 0;}
+  .stat{flex:1 1 150px;background:#fff;border:1px solid #e7e0d0;border-left:4px solid var(--gold);border-radius:5px;padding:14px 16px;}
+  .stat b{display:block;font-size:1.6rem;color:var(--wine);line-height:1.1;}
+  .stat span{font-size:.9rem;color:var(--mut);}
+  em.k{color:var(--wine);font-style:normal;font-weight:bold;}
+  a{color:var(--wine);}
+  ul.arch{list-style:none;padding:0;} ul.arch li{padding:8px 0;border-bottom:1px solid #ece5d6;}
+  ul.arch b{color:var(--wine);}
+  footer{border-top:1px solid #e0d9c8;margin-top:3em;padding:22px 0 50px;color:var(--mut);font-size:.92rem;}
+  code{background:#efe9db;padding:.05em .35em;border-radius:3px;font-size:.9em;}
+</style>
+</head>
+<body>
+<div class="band">
+  <svg viewBox="0 0 760 132" preserveAspectRatio="none" role="img" aria-label="clusters of nations">
+    <circle cx="640" cy="60" r="10" fill="#7a1f2b"/><circle cx="600" cy="80" r="7" fill="#7a1f2b"/><circle cx="670" cy="82" r="6" fill="#7a1f2b"/>
+    <circle cx="230" cy="55" r="8" fill="#2a7f62"/><circle cx="270" cy="72" r="7" fill="#2a7f62"/><circle cx="200" cy="80" r="6" fill="#2a7f62"/>
+    <circle cx="420" cy="95" r="8" fill="#c99a3b"/><circle cx="460" cy="78" r="6" fill="#c99a3b"/>
+    <circle cx="380" cy="40" r="9" fill="#4a7ba6"/>
+    <circle cx="110" cy="95" r="6" fill="#6a4c93"/><circle cx="80" cy="78" r="5" fill="#6a4c93"/>
+    <line x1="40" y1="112" x2="720" y2="112" stroke="#D4A537" stroke-width="2"/>
+  </svg>
+</div>
+<header>
+  <div class="wrap">
+    <h1>National Strength Profiles</h1>
+    <p class="sub">Who's good at what in track &amp; field — and which archetypes nations fall into.</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <p class="lead">A medal count tells you a country won three golds. It doesn't tell you whether that
+  country is a narrow specialist or a broad machine, or where its strength lives. World Athletics points
+  do — they put every performance in every event on one scale. Using them as a currency of athletic
+  capital across <strong>6,400 top performances</strong>, the world sorts itself into five clean archetypes.</p>
+
+  <div class="stats">
+    <div class="stat"><b>5</b><span>archetypes, from k-means on 43 nations × 5 disciplines</span></div>
+    <div class="stat"><b>USA</b><span>a lone superpower — far beyond everyone on overall depth</span></div>
+    <div class="stat"><b>78%</b><span>of variance captured by two interpretable PCA axes</span></div>
+  </div>
+
+  <h2>Five archetypes, drawn from the data</h2>
+  <ul class="arch">
+    <li><b>All-round powerhouses</b> — USA, GB, Netherlands, Italy, Jamaica, Canada. The USA <em>towers</em>: it sits a full principal-component beyond anyone on overall depth.</li>
+    <li><b>Distance specialists</b> — Kenya, Uganda: elite over 1500 m to the marathon, pointedly narrow elsewhere.</li>
+    <li><b>Throw &amp; jump powers</b> — Poland, China, Cuba, Nigeria: capital banked in the field, not on the track.</li>
+    <li><b>Distance &amp; middle powers</b> — Australia, France, Germany, Norway, Japan, Spain: broad programmes with an endurance tilt.</li>
+    <li><b>Emerging / single-event nations</b> — a Bahamas built on the 400 m, a Trinidad on the sprints.</li>
+  </ul>
+  <figure>
+    <img src="figures/archetypes_map.png" alt="PCA map of nations coloured by archetype, USA a far-right outlier">
+    <figcaption>Every nation on two axes: overall depth (→) and sprint/power ↔ distance (↕). Kenya anchors one pole; the USA sits alone at the far right.</figcaption>
+  </figure>
+
+  <h2>Each cluster has a fingerprint</h2>
+  <p>The throw-and-jump powers spike in the field and sag on the track; the distance specialists are the
+  mirror image; the all-rounders are strong everywhere. It's the national character of a track programme,
+  made legible.</p>
+  <figure>
+    <img src="figures/strength_heatmap.png" alt="Heatmap of national strength by discipline">
+    <figcaption>WA-point strength by discipline (z-scored), grouped by archetype — red is strong, blue is weak.</figcaption>
+  </figure>
+
+  <p style="color:var(--mut);font-size:.95rem;margin-top:2em;">Strength is a nation's mean top-5 WA score
+  per discipline. Divide this absolute map by population or GDP and the <em>overperformers</em> — the
+  Jamaicas and Norways punching above their size — light up; that per-capita layer sits directly on top of
+  this one. <a href="https://github.com/lyhjeremy/national-strength-profiles">Code &amp; method on GitHub.</a></p>
+</main>
+
+<footer>
+  <div class="wrap">
+    Built by <a href="https://github.com/lyhjeremy">Jeremy Lee</a> ·
+    <a href="https://github.com/lyhjeremy/national-strength-profiles">source on GitHub</a> ·
+    data scraped from World Athletics top lists · KMeans + PCA via <code>scikit-learn</code>.
+  </div>
+</footer>
+</body>
+</html>

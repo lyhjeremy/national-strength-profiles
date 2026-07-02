@@ -1,0 +1,8 @@
+# Data
+pandas>=2.0
+lxml>=4.9            # read_html for the World Athletics top-list tables
+
+# Analysis
+numpy>=1.24
+scikit-learn>=1.2    # KMeans clustering + PCA
+matplotlib>=3.7
