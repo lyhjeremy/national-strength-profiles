@@ -3,6 +3,7 @@
 **Which countries are good at which athletic disciplines — and which archetypes do they cluster into?**
 
 > 🌐 **Overview:** https://lyhjeremy.github.io/national-strength-profiles/
+> 📖 **In depth:** https://lyhjeremy.github.io/national-strength-profiles/overview/
 
 Olympic medal counts are a crude measure of national strength: they ignore the 99%
 of elite performances that don't reach a podium. Using **WA points as a common

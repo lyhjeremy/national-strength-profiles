@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>National Strength Profiles — which countries are good at what</title>
+<meta name="description" content="Medal counts ignore the 99% of elite performances that never reach a podium. Using WA points as a common currency across 6,400 performances, 43 nations sort into five clean archetypes." />
+<meta name="theme-color" content="#FBF8F1" />
+<meta property="og:title" content="National Strength Profiles" />
+<meta property="og:description" content="A country-by-discipline map of athletic capital, built from 6,400 elite performances rather than medal counts." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://lyhjeremy.github.io/national-strength-profiles/overview/" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --paper: #FBF8F1;
+    --card: #FFFFFF;
+    --plate: #FFFFFF;
+    --ink: #1a1a2e;
+    --ink2: #3d3d55;
+    --muted: #6B7280;
+    --rule: #E5DCC7;
+    --accent: #047857;
+    --accent2: #B45309;
+    --link: #0E7490;
+    --serif: Georgia, 'Iowan Old Style', 'Times New Roman', serif;
+    --sans: 'Source Sans 3', -apple-system, system-ui, sans-serif;
+    --mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', monospace;
+    --shadow: 0 1px 2px rgba(26,26,46,.05), 0 10px 34px rgba(26,26,46,.07);
+    --spine:  92px;
+    --col:    min(100% - 2.6rem, 62rem);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #14141f;
+      --card: #1c1c2a;
+      --plate: #f7f4ec;
+      --ink: #F2EFE6;
+      --ink2: #C9C4B6;
+      --muted: #918B7D;
+      --rule: #33313f;
+      --accent: #34D399;
+      --accent2: #E3BC5E;
+      --link: #22D3EE;
+      --shadow: 0 1px 2px rgba(0,0,0,.32), 0 10px 34px rgba(0,0,0,.4);
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: var(--serif); font-size: clamp(17px, 0.55rem + 0.6vw, 19.5px);
+    line-height: 1.68; -webkit-font-smoothing: antialiased; overflow-x: hidden;
+  }
+  img { max-width: 100%; height: auto; display: block; }
+  a { color: var(--link); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+  strong { font-weight: 700; color: var(--ink); }
+  code { font-family: var(--mono); font-size: .86em;
+         background: color-mix(in srgb, var(--ink) 7%, transparent);
+         padding: .12em .38em; border-radius: 4px; }
+  .wrap { width: var(--col); margin: 0 auto; }
+
+  .eyebrow { font-family: var(--mono); font-weight: 600; font-size: 11.5px;
+             letter-spacing: .17em; text-transform: uppercase; color: var(--muted);
+             margin: 0 0 14px; }
+
+  .masthead { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; padding: 30px 0 0; }
+  .logo { font-family: var(--sans); font-weight: 800; font-size: 21px;
+          letter-spacing: -.02em; display: flex; align-items: center; gap: 9px; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); flex: none; }
+  .tagline { font-size: 15px; color: var(--ink2); font-family: var(--sans); }
+
+  .hero { padding: 44px 0 54px; }
+  .kicker { font-family: var(--sans); font-size: clamp(18px, 2.1vw, 23px); font-weight: 600;
+            color: var(--muted); margin: 0 0 8px; letter-spacing: -.01em; }
+  .hero h1 { font-family: var(--sans); font-size: clamp(37px, 6vw, 72px); font-weight: 800;
+             letter-spacing: -.035em; line-height: 1.04; margin: 0; max-width: 17ch; }
+  .hero-sub { margin: 24px 0 0; font-size: 1.06em; color: var(--ink2); max-width: 60ch; }
+
+  .cta-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 30px; align-items: center; }
+  .btn { display: inline-block; padding: 13px 26px; border-radius: 8px;
+         font-family: var(--sans); font-weight: 700; font-size: 16px;
+         text-decoration: none; border: 1px solid var(--ink); transition: transform .15s ease; }
+  .btn:hover { transform: translateY(-1px); }
+  .btn-primary { background: var(--ink); color: var(--paper); }
+  .textlink { font-family: var(--sans); font-size: 16px; font-weight: 600; color: var(--ink2);
+              text-decoration: underline; text-underline-offset: 4px;
+              text-decoration-thickness: 1px; }
+  .textlink:hover { color: var(--ink); }
+
+  .claims { display: grid; grid-template-columns: 1fr; gap: 0 52px; margin: 50px 0 0; }
+  @media (min-width: 760px) { .claims { grid-template-columns: 1fr 1fr; } }
+  .claim { padding: 18px 0 20px; border-top: 1px solid var(--rule); }
+  .claim:first-child, .claim:nth-child(2) { border-top: 2px solid var(--ink); }
+  @media (max-width: 759px) { .claim:nth-child(2) { border-top: 1px solid var(--rule); } }
+  .claim .n { font-family: var(--sans); font-weight: 800; font-size: 40px; line-height: 1.05;
+              color: var(--accent); letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+  .claim h3 { margin: 0 0 6px; }
+  .claim p { margin: 9px 0 0; font-size: 15.5px; color: var(--ink2); line-height: 1.5;
+             font-family: var(--sans); }
+
+  .route { position: relative; padding-bottom: 30px; }
+  .route::before { content: ""; position: absolute; left: calc(var(--spine) / 2); top: 8px;
+                   bottom: 80px; width: 2px; background: var(--rule); }
+  .stop { position: relative; padding: 0 0 76px var(--spine); }
+  .stop::before { content: ""; position: absolute; left: calc(var(--spine) / 2 - 7px); top: 7px;
+                  width: 16px; height: 16px; border-radius: 50%;
+                  background: var(--paper); border: 2px solid var(--ink); box-sizing: border-box; }
+  .stop--key::before { background: var(--accent); border-color: var(--accent); }
+  .stop--warn::before { background: var(--accent2); border-color: var(--accent2); }
+  .stop--end::before { background: var(--ink); }
+
+  h2 { font-family: var(--sans); font-size: clamp(27px, 3.7vw, 38px); font-weight: 800;
+       letter-spacing: -.027em; line-height: 1.13; margin: 12px 0 16px; max-width: 19ch; }
+  h3 { font-family: var(--sans); font-size: 17px; font-weight: 700; margin: 0 0 7px;
+       letter-spacing: -.012em; }
+  .stop p { margin: 0 0 17px; max-width: 60ch; color: var(--ink2); }
+
+  .bignum { font-family: var(--sans); font-weight: 800; font-size: clamp(74px, 10vw, 128px);
+            line-height: .86; letter-spacing: -.05em; margin: 6px 0 4px; color: var(--accent);
+            font-variant-numeric: tabular-nums; }
+  .bignum-note { font-family: var(--sans); font-size: 16px; color: var(--muted); margin: 0 0 20px; }
+
+  /* A white-background chart would glow in dark mode; the plate makes it read
+     as a deliberately printed page instead. */
+  figure { margin: 28px 0 0; }
+  .plate { background: var(--plate); border: 1px solid var(--rule); border-radius: 10px;
+           padding: 14px; box-shadow: var(--shadow); overflow: hidden; }
+  .plate img { border-radius: 4px; }
+  .plate--flush { padding: 0; }
+  .shot { border-radius: 10px; border: 1px solid var(--rule); box-shadow: var(--shadow);
+          overflow: hidden; background: var(--card); }
+  /* min() so the cap never exceeds the column on a phone */
+  .shot--narrow { max-width: min(430px, 100%); }
+  figcaption { margin-top: 11px; font-family: var(--sans); font-size: 14.5px;
+               color: var(--muted); line-height: 1.5; }
+  .panels { display: grid; grid-template-columns: repeat(auto-fit, minmax(258px, 1fr));
+            gap: 22px; margin-top: 28px; }
+  .panels figure { margin: 0; }
+
+  .pull { margin: 30px 0 0; padding: 20px 25px; border-left: 3px solid var(--accent);
+          background: color-mix(in srgb, var(--accent) 7%, transparent);
+          border-radius: 0 8px 8px 0; }
+  .pull p { margin: 0 0 9px; color: var(--ink); max-width: none; }
+  .pull p:last-of-type { margin: 0; }
+  .pull .who { font-family: var(--mono); font-size: 11px; letter-spacing: .12em;
+               text-transform: uppercase; color: var(--muted); display: block; margin-top: 9px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(238px, 1fr));
+          gap: 1px; margin-top: 28px; background: var(--rule);
+          border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; }
+  .cell { background: var(--paper); padding: 22px 20px; }
+  .cell p { font-size: 15px; margin: 0; color: var(--ink2); max-width: none;
+            line-height: 1.55; font-family: var(--sans); }
+
+  /* results tables: scroll inside their own box, never the page */
+  .tablewrap { margin-top: 26px; overflow-x: auto; border: 1px solid var(--rule);
+               border-radius: 10px; background: var(--card); }
+  table { border-collapse: collapse; width: 100%; min-width: 480px;
+          font-family: var(--sans); font-size: 15.5px; }
+  th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--rule); }
+  th { font-family: var(--mono); font-size: 11px; letter-spacing: .1em;
+       text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  td { color: var(--ink2); font-variant-numeric: tabular-nums; }
+  tr:last-child td { border-bottom: 0; }
+  .win td { color: var(--ink); font-weight: 700;
+            background: color-mix(in srgb, var(--accent) 8%, transparent); }
+
+  /* real terminal output, quoted verbatim */
+  .term { margin-top: 26px; background: #14141f; color: #e6e3da; border-radius: 10px;
+          padding: 18px 20px; overflow-x: auto; box-shadow: var(--shadow);
+          border: 1px solid #2a2a3a; }
+  .term pre { margin: 0; font-family: var(--mono); font-size: 13px; line-height: 1.62;
+              white-space: pre; }
+  .term .c { color: #9aa08f; }
+  .term .g { color: #7fd18f; }
+  .term .y { color: #E3BC5E; }
+
+  .specs { margin-top: 26px; border-top: 1px solid var(--rule); }
+  .spec { display: grid; grid-template-columns: 1fr; gap: 2px;
+          padding: 14px 0; border-bottom: 1px solid var(--rule); }
+  @media (min-width: 700px) { .spec { grid-template-columns: 178px 1fr; gap: 24px; } }
+  .spec dt { font-family: var(--mono); font-size: 11.5px; letter-spacing: .1em;
+             text-transform: uppercase; color: var(--muted); padding-top: 4px; }
+  .spec dd { margin: 0; font-size: 16px; color: var(--ink2); font-family: var(--sans); }
+
+  .close { padding: 6px 0 80px var(--spine); position: relative; }
+  .close h2 { max-width: 20ch; }
+  footer { border-top: 1px solid var(--rule); padding: 28px 0 60px;
+           font-family: var(--sans); font-size: 14.5px; color: var(--muted); }
+  footer a { color: var(--ink2); }
+  footer p { margin: 0 0 8px; }
+
+  @media (max-width: 640px) {
+    :root { --spine: 38px; }
+    .hero { padding: 36px 0 46px; }
+    .stop { padding-bottom: 58px; }
+    .plate { padding: 9px; }
+    .term { padding: 14px 14px; }
+    .term pre { font-size: 11.5px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .btn { transition: none; }
+  }
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <div class="logo"><span class="dot" aria-hidden="true"></span>National Strength Profiles</div>
+    <div class="tagline">43 nations, 16 events, one common currency</div>
+  </header>
+
+  <section class="hero">
+    <p class="kicker">Medal tables count the top three and throw away the rest.</p>
+    <h1>Most national strength never reaches a podium.</h1>
+
+    <p class="hero-sub">
+      A medal count is a very lossy summary of a country's athletics programme: it
+      ignores the depth just behind the podium, which is most of what a programme
+      actually produces. Using <strong>World Athletics points as a common
+      currency</strong> across <strong>6,400 top performances</strong> in 16 events,
+      this builds a country × discipline matrix of athletic capital and then asks
+      what shapes countries come in. The answer is <strong>five clean
+      archetypes</strong>.
+    </p>
+
+    <div class="cta-row">
+      <a class="btn btn-primary" href="../">Read the short version</a>
+      <a class="textlink" href="https://github.com/lyhjeremy/national-strength-profiles">or the code and data</a>
+    </div>
+
+    <div class="claims">
+      <div class="claim">
+        <div class="n">6,400</div>
+        <p>elite performances from 2023–24, each carrying the WA points that make
+           a shot put comparable to a 5000 m.</p>
+      </div>
+      <div class="claim">
+        <div class="n">43</div>
+        <p>nations with enough elite depth to profile across five discipline
+           groups.</p>
+      </div>
+      <div class="claim">
+        <div class="n">5</div>
+        <p>archetypes out of k-means: all-round powerhouses, distance specialists,
+           throw &amp; jump powers, distance &amp; middle powers, and single-event nations.</p>
+      </div>
+      <div class="claim">
+        <div class="n">2 axes</div>
+        <p>PCA reads cleanly: PC1 is overall depth, PC2 is a sprint/power against
+           distance axis with Kenya at one pole.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="wrap">
+<div class="route">
+
+  <section class="stop">
+    <p class="eyebrow">Start · the idea</p>
+    <h2>You need one number that works for every event</h2>
+    <p>
+      The obstacle to comparing nations across events is that the events do not
+      share units. Seconds, metres and points are not interchangeable, and a
+      country strong in the hammer looks like nothing at all next to a country
+      strong in the 100 m unless you can put both on one scale.
+    </p>
+    <p>
+      World Athletics already publishes that scale. Every mark in the top lists
+      carries a WA point score designed to be cross-comparable. Whether the tables
+      are perfectly fair is its own question — one I took apart separately in
+      <a href="https://lyhjeremy.github.io/athletics-scoring-fairness/">Auditing the Scoring Tables</a>
+      — but as a common currency they are the best available, and they are what
+      the sport itself uses.
+    </p>
+  </section>
+
+  <section class="stop stop--key">
+    <p class="eyebrow">↓ the map</p>
+    <h2>Five archetypes, and one enormous outlier</h2>
+    <p>
+      Clustering the 43 nations on their strength across sprints, middle distance,
+      distance, jumps and throws produces five groups that need almost no
+      interpretation:
+    </p>
+    <div class="grid">
+      <div class="cell">
+        <h3>All-round powerhouses</h3>
+        <p>USA, Great Britain, Netherlands, Italy, Jamaica, Canada. Strong nearly
+           everywhere rather than concentrated anywhere.</p>
+      </div>
+      <div class="cell">
+        <h3>Distance specialists</h3>
+        <p>Kenya, Uganda, Ireland. Elite at distance and middle distance, and
+           pointedly narrow outside it.</p>
+      </div>
+      <div class="cell">
+        <h3>Throw &amp; jump powers</h3>
+        <p>Poland, China, Cuba, Nigeria and others whose strength sits almost
+           entirely in the field events.</p>
+      </div>
+      <div class="cell">
+        <h3>Distance &amp; middle powers</h3>
+        <p>Australia, France, Germany, Norway, Japan, Spain. Broad established
+           programmes with an endurance lean.</p>
+      </div>
+      <div class="cell">
+        <h3>Emerging / single-event</h3>
+        <p>Strong in one niche — a Bahamas 400 m, a Trinidad sprint — without the
+           breadth behind it yet.</p>
+      </div>
+      <div class="cell">
+        <h3>And then the USA</h3>
+        <p>On PC1, overall depth, the USA sits <strong>far beyond every other
+           nation</strong>. It is not the best of a group, it is its own region of
+           the chart.</p>
+      </div>
+    </div>
+    <figure>
+      <div class="plate">
+        <img width="1500" height="1050" src="../figures/archetypes_map.png" fetchpriority="high"
+          alt="PCA scatter map of national athletics archetypes, with countries coloured by cluster. The USA sits far to one side on the first principal component, with Kenya anchoring the opposite end of the second component." />
+      </div>
+      <figcaption>The two principal components: overall depth across, discipline lean up and down.</figcaption>
+    </figure>
+  </section>
+
+  <section class="stop">
+    <p class="eyebrow">↓ the underlying matrix</p>
+    <h2>Where each country's points actually come from</h2>
+    <p>
+      Behind the clusters sits the thing they were computed from: a heatmap of
+      every nation against every discipline group. The specialists are obvious as
+      bright horizontal bands, and the all-rounders as nations with no dark cells
+      at all.
+    </p>
+    <figure>
+      <div class="plate">
+        <img width="1275" height="1500" src="../figures/strength_heatmap.png" loading="lazy"
+          alt="Heatmap of nations against discipline groups, with bright cells marking where each country's elite strength is concentrated and dark cells marking absence." />
+      </div>
+      <figcaption>The strength matrix. Specialists read as bands, all-rounders as even rows.</figcaption>
+    </figure>
+    <figure>
+      <div class="plate">
+        <img width="1350" height="780" src="../figures/archetype_fingerprints.png" loading="lazy"
+          alt="Cluster fingerprint chart showing the average discipline-group profile of each of the five archetypes." />
+      </div>
+      <figcaption>Each archetype's average shape, which is what the cluster labels are describing.</figcaption>
+    </figure>
+  </section>
+
+  <section class="stop stop--warn">
+    <p class="eyebrow">↓ what this cannot tell you</p>
+    <h2>Absolute strength, not efficiency</h2>
+    <p>
+      This measures how much elite athletic capital a country has, not how
+      impressive that is given its size or wealth. On an absolute matrix, large
+      populous countries dominate almost by construction. The genuinely
+      interesting per-capita and per-GDP overperformers — Jamaica, Norway — are a
+      natural next layer, and they are not in this version.
+    </p>
+    <p>
+      Two modelling choices are worth stating plainly. Strength per nation and
+      discipline is the mean of that nation's <strong>top-5</strong> WA scores in
+      the group, which is deliberately robust to a single freak performance but
+      also means a country with exactly one world-beater scores modestly. And a
+      nation absent from a discipline entirely is <strong>filled to the column
+      minimum</strong> before z-scoring, treating absence as no elite presence.
+      That is a defensible reading, but it is an imputation and it shapes the
+      clusters.
+    </p>
+    <p>
+      A re-fetch of the raw top lists once produced different clustering values
+      than the committed table, and the cause was never isolated. The published
+      numbers are the ones in this repository; that discrepancy is recorded rather
+      than quietly resolved.
+    </p>
+  </section>
+
+  <section class="stop stop--end">
+    <p class="eyebrow">Finish · how it was built</p>
+    <h2>Where the numbers come from</h2>
+    <dl class="specs">
+      <div class="spec"><dt>Data</dt><dd>World Athletics top lists, scraped with mark, WA points and nationality</dd></div>
+      <div class="spec"><dt>Sample</dt><dd>6,400 performances, 16 events, 2023–24, 43 nations</dd></div>
+      <div class="spec"><dt>Strength metric</dt><dd>Mean of a nation's top-5 WA scores per discipline group, then z-scored</dd></div>
+      <div class="spec"><dt>Clustering</dt><dd>k-means over the five discipline groups; PCA for the map</dd></div>
+      <div class="spec"><dt>Output</dt><dd><code>national_profiles.csv</code> — every nation's per-discipline strength and archetype</dd></div>
+      <div class="spec"><dt>Built with</dt><dd>Python, pandas, scikit-learn, matplotlib</dd></div>
+      <div class="spec"><dt>Companion</dt><dd><a href="https://lyhjeremy.github.io/athletics-scoring-fairness/">Auditing the Scoring Tables</a>, which tests the currency this analysis spends</dd></div>
+    </dl>
+  </section>
+
+</div>
+</div>
+
+<div class="wrap">
+  <section class="close">
+    <h2>Countries have shapes, not rankings</h2>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="../">Read the short version</a>
+      <a class="textlink" href="https://github.com/lyhjeremy/national-strength-profiles">or the code and data</a>
+    </div>
+  </section>
+
+  <footer>
+    <p>
+      National Strength Profiles ·
+      <a href="../">Story</a> ·
+      <a href="https://github.com/lyhjeremy/national-strength-profiles">Source</a> ·
+      MIT © 2026 Jeremy Lee
+    </p>
+    <p>Performance data from World Athletics top lists.</p>
+  </footer>
+</div>
+</body>
+</html>
