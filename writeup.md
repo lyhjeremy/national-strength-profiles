@@ -1,6 +1,6 @@
-# National Strength Profiles — Who's Good at What
+# National Strength Profiles: Who's Good at What
 
-*Medal tables are a blunt instrument. With WA points as a currency, you can see the whole shape of a nation's athletic strength — and cluster the world by it.*
+*Medal tables are a blunt instrument. With WA points as a currency, you can see the whole shape of a nation's athletic strength, and cluster the world by it.*
 
 ## Beyond the medal table
 
@@ -11,7 +11,7 @@ touch a podium. World Athletics points fix that: they put every performance, in 
 event, on one comparable scale. So I used them as a **currency of athletic capital**.
 
 From **6,400 top performances** (16 events, both genders, 2023–24, each tagged with a
-nationality and its WA score) I built a **country × discipline** matrix — each cell a
+nationality and its WA score) I built a **country × discipline** matrix. Each cell a
 nation's mean top-5 score in one of five discipline groups. Then I let the data sort
 the nations out for itself, with **k-means clustering** and a **PCA** map.
 
@@ -23,17 +23,17 @@ the nations out for itself, with **k-means clustering** and a **PCA** map.
 
 The clusters are exactly the ones a fan would name, now drawn from data:
 
-- **All-round powerhouses** — the USA, GB, the Netherlands, Italy, Jamaica, Canada.
+- **All-round powerhouses.** The USA, GB, the Netherlands, Italy, Jamaica, Canada.
   And the USA is not just in this group, it *towers* over it: on the depth axis it sits
   a full principal-component-unit beyond anyone else. It is the sport's one true
   superpower.
-- **Distance specialists** — Kenya and Uganda, elite over 1500 m to the marathon and
+- **Distance specialists.** Kenya and Uganda, elite over 1500 m to the marathon and
   pointedly narrow everywhere else. Kenya anchors the entire distance pole of the map.
-- **Throw & jump powers** — Poland, China, Cuba, Nigeria: nations whose athletic
+- **Throw & jump powers.** Poland, China, Cuba, Nigeria: nations whose athletic
   capital is banked in the field, not on the track.
-- **Distance & middle powers** — Australia, France, Germany, Norway, Japan, Spain:
+- **Distance & middle powers.** Australia, France, Germany, Norway, Japan, Spain:
   broad, well-funded programmes with an endurance tilt.
-- **Emerging / single-event nations** — a Bahamas built on the 400 m, a Trinidad on the
+- **Emerging / single-event nations.** A Bahamas built on the 400 m, a Trinidad on the
   sprints: real world-class presence, in one lane.
 
 <p align="center">
@@ -43,9 +43,9 @@ The clusters are exactly the ones a fan would name, now drawn from data:
 ## What the axes mean
 
 The two principal components are interpretable, which is the tell that the structure
-is real and not an artefact. **PC1 (49% of the variance) is overall depth** — how much
+is real and not an artefact. **PC1 (49% of the variance) is overall depth.** How much
 world-class strength a nation has, full stop; it runs from the emerging nations up to
-the USA. **PC2 (29%) is a sprint-and-power ↔ distance axis** — Kenya sits at one
+the USA. **PC2 (29%) is a sprint-and-power ↔ distance axis.** Kenya sits at one
 extreme, the throws-and-jumps nations at the other, and the balanced programmes in
 between.
 
@@ -60,7 +60,7 @@ strong everywhere. It's the national character of a track programme, made legibl
 ## Where this goes next
 
 The matrix here is *absolute* strength. Divide it by population or GDP and a different,
-equally interesting map appears — the **overperformers**, the Jamaicas and Norways that
+equally interesting map appears. The **overperformers**, the Jamaicas and Norways that
 punch far above their size. That per-capita layer sits directly on top of this one, and
 is the natural next chapter.
 

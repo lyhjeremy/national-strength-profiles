@@ -1,9 +1,11 @@
-# National Strength Profiles — Who's Good at What
+# National Strength Profiles: Who's Good at What
 
-**Which countries are good at which athletic disciplines — and which archetypes do they cluster into?**
+Design and copy follow [these standards](https://github.com/lyhjeremy/lyhjeremy/blob/main/DESIGN_STANDARDS.md).
 
-> 🌐 **Overview:** https://lyhjeremy.github.io/national-strength-profiles/
-> 📖 **In depth:** https://lyhjeremy.github.io/national-strength-profiles/overview/
+**Which countries are good at which athletic disciplines, and which archetypes do they cluster into?**
+
+> **Overview:** https://lyhjeremy.github.io/national-strength-profiles/
+> **In depth:** https://lyhjeremy.github.io/national-strength-profiles/overview/
 
 Olympic medal counts are a crude measure of national strength: they ignore the 99%
 of elite performances that don't reach a podium. Using **WA points as a common
@@ -20,20 +22,20 @@ archetypes and maps them.
 Clustering 43 nations on their WA-point strength across five discipline groups
 (sprints, middle, distance, jumps, throws) yields five clean archetypes:
 
-- **All-round powerhouses** — USA, Great Britain, Netherlands, Italy, Jamaica, Canada.
+- **All-round powerhouses.** USA, Great Britain, Netherlands, Italy, Jamaica, Canada.
   The USA is a *massive* outlier: on the first principal component (overall depth) it
   sits far beyond everyone else.
-- **Distance specialists** — Kenya, Uganda, Ireland: elite at distance and middle
+- **Distance specialists.** Kenya, Uganda, Ireland: elite at distance and middle
   distance, and pointedly narrow.
-- **Throw & jump powers** — Poland, China, Cuba, Nigeria and others whose strength is
+- **Throw & jump powers.** Poland, China, Cuba, Nigeria and others whose strength is
   concentrated in the field events.
-- **Distance & middle powers** — Australia, France, Germany, Norway, Japan, Spain: broad,
+- **Distance & middle powers.** Australia, France, Germany, Norway, Japan, Spain: broad,
   established programmes with an endurance lean.
-- **Emerging / single-event nations** — strong in one niche (a Bahamas 400 m, a
+- **Emerging / single-event nations**, strong in one niche (a Bahamas 400 m, a
   Trinidad sprint) but not yet broad.
 
 The two principal components read cleanly as **overall depth (PC1)** and a
-**sprint/power ↔ distance axis (PC2)** — Kenya anchors one pole, the throws-and-jumps
+**sprint/power ↔ distance axis (PC2).** Kenya anchors one pole, the throws-and-jumps
 nations the other.
 
 ## Run it
@@ -53,7 +55,7 @@ python analyze.py         # country × discipline matrix, KMeans + PCA -> figure
 
 ## Method notes
 Strength per (nation, discipline) is the mean of a nation's **top-5 WA scores** in
-that group — robust to one-off performances, representative of genuine depth. A
+that group: robust to one-off performances, representative of genuine depth. A
 nation absent from a discipline is treated as having no elite presence (filled to
 the column minimum) before z-scoring. Per-capita and per-GDP "overperformer" views
 (Jamaica, Norway) are a natural next layer on top of this absolute matrix.
