@@ -3,107 +3,91 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>National Strength Profiles: who's good at what in athletics</title>
-<meta name="description" content="Which countries are good at which track & field disciplines? Clustering 43 nations by WA-point strength reveals five clear archetypes, and the USA as a lone superpower.">
+<title>National strength profiles: who's good at what in athletics</title>
+<meta name="description" content="K-means and PCA on WA-point strength across five discipline groups sort 43 athletics nations into five archetypes, from 6,400 elite performances in 2023 and 2024.">
+<link rel="stylesheet" href="assets/family.css">
 <style>
-@font-face{font-family:"Source Serif 4";src:url("fonts/SourceSerif4-400.woff2")format("woff2");font-weight:400;font-display:swap}
-@font-face{font-family:"Source Serif 4";src:url("fonts/SourceSerif4-600.woff2")format("woff2");font-weight:600;font-display:swap}
-@font-face{font-family:"IBM Plex Sans";src:url("fonts/IBMPlexSans-400.woff2")format("woff2");font-weight:400;font-display:swap}
-@font-face{font-family:"IBM Plex Sans";src:url("fonts/IBMPlexSans-600.woff2")format("woff2");font-weight:600;font-display:swap}
-@font-face{font-family:"IBM Plex Mono";src:url("fonts/IBMPlexMono-400.woff2")format("woff2");font-weight:400;font-display:swap}
-
-  :root{ --paper:#EDEDE7; --ink:#1C1E1B; --wine:#2C5852; --gold:#8C3A1E; --mut:#6b6656; }
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--paper);color:var(--ink);font-family:"Source Serif 4", "Iowan Old Style", "Palatino Linotype", Palatino, serif;line-height:1.65;}
-  .band{background:var(--ink);color:var(--paper);}
-  .band svg{display:block;width:100%;height:auto}
-  .wrap{max-width:760px;margin:0 auto;padding:0 22px;}
-  header .wrap{padding:38px 22px 30px;}
-  h1{font-size:2.1rem;line-height:1.15;margin:0 0 10px;}
-  .sub{font-size:1.15rem;color:#d8d2c4;margin:0;font-style:italic;}
-  h2{font-size:1.5rem;margin:2.4em 0 .5em;border-bottom:2px solid var(--gold);padding-bottom:.2em;}
-  p{margin:.8em 0;} .lead{font-size:1.18rem;}
-  figure{margin:1.6em 0;text-align:center;}
-  figure img{max-width:100%;height:auto;border:1px solid #e7e0d0;border-radius: 0;background:#F5F5F0;}
-  figcaption{font-size:.92rem;color:var(--mut);margin-top:.5em;font-style:italic;}
-  .stats{display:flex;flex-wrap:wrap;gap:14px;margin:1.4em 0;}
-  .stat{flex:1 1 150px;background:#F5F5F0;border:1px solid #e7e0d0;border-left:4px solid var(--gold);border-radius: 0;padding:14px 16px;}
-  .stat b{display:block;font-size:1.6rem;color:var(--wine);line-height:1.1;}
-  .stat span{font-size:.9rem;color:var(--mut);}
-  em.k{color:var(--wine);font-style:normal;font-weight:bold;}
-  a{color:var(--wine);}
-  ul.arch{list-style:none;padding:0;} ul.arch li{padding:8px 0;border-bottom:1px solid #ece5d6;}
-  ul.arch b{color:var(--wine);}
-  footer{border-top:1px solid #e0d9c8;margin-top:3em;padding:22px 0 50px;color:var(--mut);font-size:.92rem;}
-  code{background:#efe9db;padding:.05em .35em;border-radius: 0;font-size:.9em;}
+  * { box-sizing: border-box; border-radius: 0; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font-head);
+         font-size: 18px; line-height: 1.65; }
+  a { color: var(--signal); }
+  :focus-visible { outline: 2px solid var(--signal); outline-offset: 3px; }
+  .bar-link { display: block; background: var(--ink); color: var(--paper); text-align: center; padding: 11px 18px;
+              font: 600 14.5px/1.45 var(--font-body); text-decoration: none; }
+  .bar-link:hover { text-decoration: underline; }
+  .wrap { width: min(100% - 2.6rem, 68rem); margin: 0 auto; }
+  header { display: grid; gap: 10px 48px; padding: 34px 0 0; }
+  @media (min-width: 900px) { header { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); align-items: end; } }
+  .eyebrow { grid-column: 1 / -1; font: 600 13px/1.4 var(--font-mono); letter-spacing: .14em; text-transform: uppercase;
+             color: var(--ink-2); border-top: 7px double var(--signal); padding-top: 14px; margin: 0; max-width: none; }
+  h1 { font: 800 clamp(46px, 7.4vw, 96px)/.92 var(--font-display); text-transform: uppercase; margin: 6px 0 0; }
+  .lede { color: var(--ink-2); margin: 0; max-width: 52ch; }
+  figure { margin: 30px 0 0; }
+  figure img { display: block; width: 100%; height: auto; border: 1px solid var(--rule); background: var(--panel); }
+  figcaption { font: 400 14.5px/1.5 var(--font-body); color: var(--ink-2); margin-top: 10px; max-width: 70ch; }
+  h2 { font: 700 clamp(28px, 4vw, 42px)/1 var(--font-display); text-transform: uppercase; margin: 64px 0 6px; }
+  p { max-width: 64ch; }
+  .lanes { list-style: none; margin: 18px 0 0; padding: 0; counter-reset: lane; border-top: 2px solid var(--ink); }
+  .lanes li { counter-increment: lane; display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 4px 16px;
+              padding: 16px 0; border-bottom: 1px solid var(--rule); }
+  @media (min-width: 760px) { .lanes li { grid-template-columns: 64px 15rem minmax(0, 1fr); } }
+  .lanes li::before { content: counter(lane); grid-row: span 2; font: 800 44px/.9 var(--font-display); color: var(--signal); }
+  @media (min-width: 760px) { .lanes li::before { grid-row: auto; } }
+  .lanes b { font: 700 22px/1.1 var(--font-display); text-transform: uppercase; letter-spacing: .02em; }
+  .lanes span { font: 400 16px/1.5 var(--font-body); color: var(--ink-2); }
+  .specs { margin: 18px 0 0; border-top: 1px solid var(--rule); max-width: 64ch; }
+  .specs div { display: grid; grid-template-columns: 9rem minmax(0, 1fr); gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--rule); }
+  .specs dt { font: 600 12px/1.9 var(--font-mono); text-transform: uppercase; letter-spacing: .1em; color: var(--ink-2); }
+  .specs dd { margin: 0; font: 400 16px/1.5 var(--font-body); }
+  footer { border-top: 1px solid var(--rule); margin-top: 70px; padding: 22px 0 54px;
+           font: 400 14.5px/1.6 var(--font-body); color: var(--ink-2); }
+  footer a { color: var(--ink-2); }
 </style>
 </head>
 <body>
-<a href="overview/" data-overview-link style="display:block;background:#1C1E1B;color:#EDEDE7;text-align:center;padding:11px 18px;font:600 14.5px/1.45 -apple-system,'Helvetica Neue',Arial,sans-serif;letter-spacing:.01em;text-decoration:none">Read the full writeup&nbsp;&rarr;</a>
-
-<div class="band">
-  <svg viewBox="0 0 760 132" preserveAspectRatio="none" role="img" aria-label="clusters of nations">
-    <circle cx="640" cy="60" r="10" fill="#2C5852"/><circle cx="600" cy="80" r="7" fill="#2C5852"/><circle cx="670" cy="82" r="6" fill="#2C5852"/>
-    <circle cx="230" cy="55" r="8" fill="#2a7f62"/><circle cx="270" cy="72" r="7" fill="#2a7f62"/><circle cx="200" cy="80" r="6" fill="#2a7f62"/>
-    <circle cx="420" cy="95" r="8" fill="#c99a3b"/><circle cx="460" cy="78" r="6" fill="#c99a3b"/>
-    <circle cx="380" cy="40" r="9" fill="#4a7ba6"/>
-    <circle cx="110" cy="95" r="6" fill="#6a4c93"/><circle cx="80" cy="78" r="5" fill="#6a4c93"/>
-    <line x1="40" y1="112" x2="720" y2="112" stroke="#8C3A1E" stroke-width="2"/>
-  </svg>
-</div>
-<header>
-  <div class="wrap">
-    <h1>National Strength Profiles</h1>
-    <p class="sub">Who's good at what in track &amp; field, and which archetypes nations fall into.</p>
-  </div>
-</header>
+<a class="bar-link" href="overview/" data-overview-link>Read the full writeup&nbsp;&rarr;</a>
 
 <main class="wrap">
-  <p class="lead">A medal count tells you a country won three golds. It doesn't tell you whether that
-  country is a narrow specialist or a broad machine, or where its strength lives. World Athletics points
-  do. They put every performance in every event on one scale. Using them as a currency of athletic
-  capital across <strong>6,400 top performances</strong>, the world sorts itself into five clean archetypes.</p>
+  <header>
+    <p class="eyebrow">National strength profiles · 43 nations · 6,400 performances</p>
+    <h1>Five kinds of athletics nation</h1>
+    <p class="lede">Every performance in the 2023 and 2024 World Athletics top-100 lists, scored in WA points,
+    gives each country a strength score in sprints, middle distance, distance, jumps and throws.
+    K-means on those five scores sorts 43 nations into five archetypes. PCA puts them on a map.</p>
+  </header>
 
-  <div class="stats">
-    <div class="stat"><b>5</b><span>archetypes, from k-means on 43 nations × 5 disciplines</span></div>
-    <div class="stat"><b>USA</b><span>a lone superpower, far beyond everyone on overall depth</span></div>
-    <div class="stat"><b>78%</b><span>of variance captured by two interpretable PCA axes</span></div>
-  </div>
-
-  <h2>Five archetypes, drawn from the data</h2>
-  <ul class="arch">
-    <li><b>All-round powerhouses</b>. USA, GB, Netherlands, Italy, Jamaica, Canada. The USA <em>towers</em>: it sits a full principal-component beyond anyone on overall depth.</li>
-    <li><b>Distance specialists</b>. Kenya, Uganda: elite over 1500 m to the marathon, pointedly narrow elsewhere.</li>
-    <li><b>Throw &amp; jump powers</b>. Poland, China, Cuba, Nigeria: capital banked in the field, not on the track.</li>
-    <li><b>Distance &amp; middle powers</b>. Australia, France, Germany, Norway, Japan, Spain: broad programmes with an endurance tilt.</li>
-    <li><b>Emerging / single-event nations</b>. A Bahamas built on the 400 m, a Trinidad on the sprints.</li>
-  </ul>
   <figure>
-    <img src="figures/archetypes_map.png" alt="PCA map of nations coloured by archetype, USA a far-right outlier">
-    <figcaption>Every nation on two axes: overall depth (→) and sprint/power ↔ distance (↕). Kenya anchors one pole; the USA sits alone at the far right.</figcaption>
+    <img width="1500" height="1050" src="figures/archetypes_map.png" alt="PCA scatter of 43 nations coloured by archetype. The USA sits alone at the far right of the first component; Kenya, Uganda and Ireland sit far below the rest on the second component.">
+    <figcaption>PC1 (49% of variance) is overall depth: the USA scores 5.0 and Great Britain, next, 2.8. PC2 (29%) separates field-event strength (up) from distance and middle distance (down).</figcaption>
   </figure>
 
-  <h2>Each cluster has a fingerprint</h2>
-  <p>The throw-and-jump powers spike in the field and sag on the track; the distance specialists are the
-  mirror image; the all-rounders are strong everywhere. It's the national character of a track programme,
-  made legible.</p>
+  <h2>The five archetypes</h2>
+  <ol class="lanes">
+    <li><b>All-round powerhouses</b><span>USA, Great Britain, Netherlands, Italy, Jamaica, Canada. Above average in every group. The USA has the highest score in sprints, jumps and throws.</span></li>
+    <li><b>Distance specialists</b><span>Kenya, Uganda, Ireland. Kenya's distance score (1297) is the highest of any nation, and it also leads middle distance; jumps and throws are near the floor.</span></li>
+    <li><b>Distance and middle powers</b><span>Australia, France, Germany, Norway, South Africa, Spain, Sweden, Japan, Belgium, Switzerland. Broad, with an endurance lean.</span></li>
+    <li><b>Throw and jump powers</b><span>Poland, New Zealand, Cuba, China, Nigeria and eleven more. A little above average in the field, below it on the track.</span></li>
+    <li><b>Emerging or single-event</b><span>Bahamas, Hungary, Algeria, Trinidad and Tobago and four more. One group that stands out, with little behind it.</span></li>
+  </ol>
+
   <figure>
-    <img src="figures/strength_heatmap.png" alt="Heatmap of national strength by discipline">
-    <figcaption>WA-point strength by discipline (z-scored), grouped by archetype: red is strong, blue is weak.</figcaption>
+    <img width="1350" height="780" src="figures/archetype_fingerprints.png" alt="Grouped bar chart of each archetype's mean z-scored strength in the five discipline groups. Distance specialists are high on distance and very low on jumps and throws; all-rounders are positive everywhere.">
+    <figcaption>Each archetype's mean z-scored profile.</figcaption>
   </figure>
 
-  <p style="color:var(--mut);font-size:.95rem;margin-top:2em;">Strength is a nation's mean top-5 WA score
-  per discipline. Divide this absolute map by population or GDP and the <em>overperformers</em>, the
-  Jamaicas and Norways punching above their size. Light up; that per-capita layer sits directly on top of
-  this one. <a href="https://github.com/lyhjeremy/national-strength-profiles">Code &amp; method on GitHub.</a></p>
+  <h2>How it works</h2>
+  <dl class="specs">
+    <div><dt>Data</dt><dd>World Athletics outdoor top 100 per event, 16 events, men and women, 2023 and 2024</dd></div>
+    <div><dt>Strength</dt><dd>Mean of a nation's five best WA scores per group, z-scored</dd></div>
+    <div><dt>Models</dt><dd>K-means (k = 5) and PCA in scikit-learn</dd></div>
+    <div><dt>Caveat</dt><dd>Absolute strength, not per capita. Absent groups are filled with the column minimum, and three borderline nations change cluster when k-means is rerun on a newer scikit-learn.</dd></div>
+  </dl>
+  <p>The <a href="overview/">full writeup</a> has the strength table for two nations from each archetype, the heatmap and the limitations in detail.</p>
 </main>
 
-<footer>
-  <div class="wrap">
-    Built by <a href="https://github.com/lyhjeremy">Jeremy Lee</a> ·
-    <a href="https://github.com/lyhjeremy/national-strength-profiles">source on GitHub</a> ·
-    data scraped from World Athletics top lists · KMeans + PCA via <code>scikit-learn</code>.
-  </div>
+<footer class="wrap">
+  Jeremy Lee · <a href="https://github.com/lyhjeremy/national-strength-profiles">Source on GitHub</a> ·
+  <a href="overview/">Full writeup</a> · Data from World Athletics top lists · K-means and PCA via scikit-learn
 </footer>
 </body>
 </html>

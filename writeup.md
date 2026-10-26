@@ -1,67 +1,47 @@
-# National Strength Profiles: Who's Good at What
+# National strength profiles: who's good at what
 
-*Medal tables are a blunt instrument. With WA points as a currency, you can see the whole shape of a nation's athletic strength, and cluster the world by it.*
+*Medal tables count the podium. WA points can describe the whole shape of a nation's athletics strength, and nations can be clustered by that shape.*
 
 ## Beyond the medal table
 
-A medal count tells you a country won three golds. It doesn't tell you whether that
-country is a narrow specialist or a broad machine, whether its strength is sprinting
-or throwing, or how it stacks up in the 99% of world-class performances that never
-touch a podium. World Athletics points fix that: they put every performance, in every
-event, on one comparable scale. So I used them as a **currency of athletic capital**.
+A medal count tells you a country won three golds. It doesn't say whether the country is a narrow specialist or strong everywhere, whether its strength is in sprinting or throwing, or how it does in the large majority of world-class performances that never reach a podium. World Athletics points put every performance in every event on one scale, so I used them as a measure of a nation's elite depth.
 
-From **6,400 top performances** (16 events, both genders, 2023–24, each tagged with a
-nationality and its WA score) I built a **country × discipline** matrix. Each cell a
-nation's mean top-5 score in one of five discipline groups. Then I let the data sort
-the nations out for itself, with **k-means clustering** and a **PCA** map.
+From 6,400 top performances (the top 100 in each of 16 events, men and women, 2023 and 2024, each with a nationality and a WA score) I built a country by discipline matrix. Each cell is a nation's mean top-five score in one of five groups: sprints, middle distance, distance, jumps and throws. Nations with presence in at least three groups and at least 12 performances make the cut, which leaves 43. Then k-means clustering sorts the nations and PCA maps them.
 
-## Five archetypes fall out cleanly
+## Five archetypes
 
 <p align="center">
-  <img src="figures/archetypes_map.png" alt="PCA map of nations coloured by archetype" width="760">
+  <img src="figures/archetypes_map.png" alt="PCA scatter of 43 nations coloured by archetype. The USA sits alone at the far right of the first component; Kenya, Uganda and Ireland sit far below the rest on the second component." width="760">
 </p>
 
-The clusters are exactly the ones a fan would name, now drawn from data:
+The clusters are close to the ones a fan would name:
 
-- **All-round powerhouses.** The USA, GB, the Netherlands, Italy, Jamaica, Canada.
-  And the USA is not just in this group, it *towers* over it: on the depth axis it sits
-  a full principal-component-unit beyond anyone else. It is the sport's one true
-  superpower.
-- **Distance specialists.** Kenya and Uganda, elite over 1500 m to the marathon and
-  pointedly narrow everywhere else. Kenya anchors the entire distance pole of the map.
-- **Throw & jump powers.** Poland, China, Cuba, Nigeria: nations whose athletic
-  capital is banked in the field, not on the track.
-- **Distance & middle powers.** Australia, France, Germany, Norway, Japan, Spain:
-  broad, well-funded programmes with an endurance tilt.
-- **Emerging / single-event nations.** A Bahamas built on the 400 m, a Trinidad on the
-  sprints: real world-class presence, in one lane.
+- **All-round powerhouses:** the USA, Great Britain, the Netherlands, Italy, Jamaica and Canada. All are above average in every group. The USA stands apart even here: it scores 5.0 on the first principal component, Great Britain 2.8, and the other four between 1.7 and 2.2. Its summed strength is 242 points ahead of Great Britain's.
+- **Distance specialists:** Kenya, Uganda and Ireland. Kenya has the highest distance and middle-distance scores of any nation and sits at the bottom of the map on its own.
+- **Distance and middle powers:** Australia, France, Germany, Norway, South Africa, Spain, Sweden, Japan, Belgium and Switzerland. Broad programmes with an endurance lean.
+- **Throw and jump powers:** sixteen nations including Poland, New Zealand, Cuba, China and Nigeria. On average a little above the field in jumps and throws and below it on the track.
+- **Emerging or single-event nations:** eight, including the Bahamas and Trinidad and Tobago (sprints) and Algeria (middle distance). One group stands out and there is little behind it.
 
 <p align="center">
-  <img src="figures/strength_heatmap.png" alt="Heatmap of national strength by discipline" width="620">
+  <img src="figures/strength_heatmap.png" alt="Heatmap of 28 nations against five discipline groups, z-scored and grouped by archetype, with strong cells in red and weak cells in blue." width="620">
 </p>
 
 ## What the axes mean
 
-The two principal components are interpretable, which is the tell that the structure
-is real and not an artefact. **PC1 (49% of the variance) is overall depth.** How much
-world-class strength a nation has, full stop; it runs from the emerging nations up to
-the USA. **PC2 (29%) is a sprint-and-power ↔ distance axis.** Kenya sits at one
-extreme, the throws-and-jumps nations at the other, and the balanced programmes in
-between.
+The two principal components explain 78% of the variance between them. PC1 (49%) loads almost evenly on all five groups, so it is overall depth: it runs from the emerging nations up to the USA. PC2 (29%) loads positively on jumps and throws and negatively on distance and middle distance, so it separates field-event nations (top of the map) from endurance nations (bottom). Kenya, Uganda and Ireland sit at the bottom of that axis.
 
 <p align="center">
-  <img src="figures/archetype_fingerprints.png" alt="Mean discipline profile of each cluster" width="720">
+  <img src="figures/archetype_fingerprints.png" alt="Grouped bar chart of each archetype's mean z-scored strength in the five discipline groups. Distance specialists are high on distance and very low on jumps and throws; all-rounders are positive everywhere." width="720">
 </p>
 
-Each cluster has a *fingerprint*: the throw-and-jump powers spike in the field and sag
-on the track; the distance specialists are the mirror image; the all-rounders are
-strong everywhere. It's the national character of a track programme, made legible.
+Each cluster has a fingerprint. The distance specialists are well above average on distance (mean z of 1.5) and far below it on jumps (−2.0). The all-rounders are positive in every group. The throw and jump powers are mildly positive in the field and negative on the track.
 
-## Where this goes next
+## Limits and next steps
 
-The matrix here is *absolute* strength. Divide it by population or GDP and a different,
-equally interesting map appears. The **overperformers**, the Jamaicas and Norways that
-punch far above their size. That per-capita layer sits directly on top of this one, and
-is the natural next chapter.
+The matrix measures absolute strength. Dividing it by population or GDP would give a different map of overperformers, with Jamaica and Norway as likely candidates, and that is the obvious next layer.
+
+Two modelling choices matter. A nation with no score in a group gets the column minimum, which is a reasonable reading of "no elite presence" but is still an imputation. And the top-five mean protects against one freak mark while underrating a country whose strength in a group is one athlete.
+
+The cluster boundaries are soft. Rerunning k-means on the committed table with scikit-learn 1.6 moves three nations: Germany and South Africa join the all-rounders and Mexico joins the emerging group. A re-fetch of the raw top lists also once gave values that differed from the committed table, and I never found out why. The numbers here are the ones in `tables/national_profiles.csv`.
 
 *Code: [github.com/lyhjeremy/national-strength-profiles](https://github.com/lyhjeremy/national-strength-profiles)*

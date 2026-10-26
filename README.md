@@ -1,64 +1,59 @@
-# National Strength Profiles: Who's Good at What
+# National strength profiles
+
+Which countries are good at which athletics disciplines: k-means and PCA on WA-point strength for 43 nations, built from 6,400 elite performances.
+
+[Live site](https://lyhjeremy.github.io/national-strength-profiles/) · [Write-up](https://lyhjeremy.github.io/national-strength-profiles/overview/) · [Long-form notes](writeup.md)
 
 Design and copy follow [these standards](https://github.com/lyhjeremy/lyhjeremy/blob/main/DESIGN_STANDARDS.md).
 
-**Which countries are good at which athletic disciplines, and which archetypes do they cluster into?**
+## Results
 
-> **Overview:** https://lyhjeremy.github.io/national-strength-profiles/
-> **In depth:** https://lyhjeremy.github.io/national-strength-profiles/overview/
-
-Olympic medal counts are a crude measure of national strength: they ignore the 99%
-of elite performances that don't reach a podium. Using **WA points as a common
-currency**, this project builds a country × discipline matrix of *athletic capital*
-from **6,400 top performances (16 events, 2023–24)**, then clusters nations into
-archetypes and maps them.
+- 43 nations cluster into five archetypes: all-round powerhouses (6), distance specialists (3), distance and middle powers (10), throw and jump powers (16), and emerging or single-event nations (8).
+- Two principal components explain 78% of the variance: overall depth (PC1, 49%) and field events against endurance (PC2, 29%).
+- The USA scores 5.0 on PC1; Great Britain is next at 2.8. The USA has the highest strength score in sprints, jumps and throws, and Kenya leads middle distance and distance.
 
 <p align="center">
-  <img src="figures/archetypes_map.png" alt="PCA map of national athletics archetypes" width="820">
+  <img src="figures/archetypes_map.png" alt="PCA scatter of 43 nations coloured by archetype. The USA sits alone at the far right of the first component; Kenya, Uganda and Ireland sit far below the rest on the second component." width="820">
 </p>
 
-## What it finds
+## Method
 
-Clustering 43 nations on their WA-point strength across five discipline groups
-(sprints, middle, distance, jumps, throws) yields five clean archetypes:
+1. `fetch_data.py` scrapes the World Athletics outdoor top lists: top 100 per event for 16 events, men and women, 2023 and 2024 (6,400 performances), each with its mark, nationality and WA points ("Results Score").
+2. Events are grouped into sprints, middle distance, distance, jumps and throws. A nation's strength in a group is the mean of its top five WA scores there, given at least three performances in that group.
+3. Nations need presence in at least three groups and 12 performances overall, which leaves 43. A missing group is filled with the column minimum (no elite presence), then each column is z-scored with `StandardScaler`.
+4. K-means (k = 5, `random_state=0`) assigns archetypes. Each cluster is named by rule from its mean z-profile, for example "specialists" when one group clearly dominates.
+5. PCA projects the five z-scores onto two axes for the map.
 
-- **All-round powerhouses.** USA, Great Britain, Netherlands, Italy, Jamaica, Canada.
-  The USA is a *massive* outlier: on the first principal component (overall depth) it
-  sits far beyond everyone else.
-- **Distance specialists.** Kenya, Uganda, Ireland: elite at distance and middle
-  distance, and pointedly narrow.
-- **Throw & jump powers.** Poland, China, Cuba, Nigeria and others whose strength is
-  concentrated in the field events.
-- **Distance & middle powers.** Australia, France, Germany, Norway, Japan, Spain: broad,
-  established programmes with an endurance lean.
-- **Emerging / single-event nations**, strong in one niche (a Bahamas 400 m, a
-  Trinidad sprint) but not yet broad.
+## Stack
 
-The two principal components read cleanly as **overall depth (PC1)** and a
-**sprint/power ↔ distance axis (PC2).** Kenya anchors one pole, the throws-and-jumps
-nations the other.
+Python, pandas, lxml, NumPy, scikit-learn, matplotlib. Static site on GitHub Pages.
 
-## Run it
+## How to run
+
 ```bash
 pip install -r requirements.txt
-python fetch_data.py      # scrape WA top lists (mark + points + nationality) -> data/raw/
-python analyze.py         # country × discipline matrix, KMeans + PCA -> figures/ + tables/
+python fetch_data.py      # scrape WA top lists (mark, points, nationality) -> data/raw/ (git-ignored)
+python analyze.py         # strength matrix, k-means and PCA -> figures/ and tables/
 ```
 
-## Files
+## Repo layout
+
 | Path | What it is |
 |---|---|
-| `fetch_data.py` | Scrape World Athletics top lists with nationality + WA points |
-| `analyze.py` | Build the strength matrix, cluster nations (KMeans), map them (PCA) |
-| `figures/` | Archetype map, discipline-strength heatmap, cluster fingerprints |
-| `tables/` | `national_profiles.csv` (each nation's per-discipline strength + archetype) |
+| `fetch_data.py` | Scrape World Athletics top lists with nationality and WA points |
+| `analyze.py` | Build the strength matrix, cluster nations (k-means), map them (PCA) |
+| `figures/` | Archetype map, strength heatmap, cluster fingerprints |
+| `tables/national_profiles.csv` | Each nation's five strength scores, total and archetype |
+| `index.html`, `overview/` | The two pages of the site |
+| `writeup.md` | Long-form notes |
 
-## Method notes
-Strength per (nation, discipline) is the mean of a nation's **top-5 WA scores** in
-that group: robust to one-off performances, representative of genuine depth. A
-nation absent from a discipline is treated as having no elite presence (filled to
-the column minimum) before z-scoring. Per-capita and per-GDP "overperformer" views
-(Jamaica, Norway) are a natural next layer on top of this absolute matrix.
+## Limitations
+
+- This is absolute strength. Large countries do well by construction; there is no per-capita or per-GDP view yet.
+- Filling a missing group with the column minimum is an imputation, and it pushes the specialist clusters apart.
+- Averaging the top five protects against one-off marks but undersells a country with a single world-beater in a group.
+- Borderline assignments are not stable. Rerunning k-means on the committed table with scikit-learn 1.6 moves Germany and South Africa to the all-rounders and Mexico to the emerging group. A re-fetch of the raw top lists also once gave values different from the committed table, and the cause was not found.
 
 ## License
-[MIT](LICENSE) © 2026 Jeremy Lee · performance data from World Athletics top lists
+
+[MIT](LICENSE) © 2026 Jeremy Lee. Performance data from World Athletics top lists.
