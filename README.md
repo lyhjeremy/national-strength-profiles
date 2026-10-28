@@ -13,7 +13,7 @@ Design and copy follow [these standards](https://github.com/lyhjeremy/lyhjeremy/
 - The USA scores 5.0 on PC1; Great Britain is next at 2.8. The USA has the highest strength score in sprints, jumps and throws, and Kenya leads middle distance and distance.
 
 <p align="center">
-  <img src="figures/archetypes_map.png" alt="PCA scatter of 43 nations coloured by archetype. The USA sits alone at the far right of the first component; Kenya, Uganda and Ireland sit far below the rest on the second component." width="820">
+  <img src="figures/archetypes_map.png" alt="PCA scatter of 43 nations colored by archetype. The USA sits alone at the far right of the first component; Kenya, Uganda and Ireland sit far below the rest on the second component." width="820">
 </p>
 
 ## Method
@@ -49,7 +49,7 @@ python analyze.py         # strength matrix, k-means and PCA -> figures/ and tab
 
 ## Limitations
 
-- This is absolute strength. Large countries do well by construction; there is no per-capita or per-GDP view yet.
+- This is absolute strength, so large countries do well by construction. A per-capita or per-GDP view hasn't been built yet.
 - Filling a missing group with the column minimum is an imputation, and it pushes the specialist clusters apart.
 - Averaging the top five protects against one-off marks but undersells a country with a single world-beater in a group.
 - Borderline assignments are not stable. Rerunning k-means on the committed table with scikit-learn 1.6 moves Germany and South Africa to the all-rounders and Mexico to the emerging group. A re-fetch of the raw top lists also once gave values different from the committed table, and the cause was not found.
