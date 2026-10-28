@@ -26,7 +26,7 @@ Design and copy follow [these standards](https://github.com/lyhjeremy/lyhjeremy/
 
 ## Stack
 
-Python, pandas, lxml, NumPy, scikit-learn, matplotlib. Static site on GitHub Pages.
+Python, pandas, lxml, NumPy, scikit-learn, matplotlib. Static site on GitHub Pages. The write-up has a nation picker: it redraws the PCA map in the browser from `tables/national_profiles.csv` (matching the 49% and 29% shares and the PC1 scores above) and shows the chosen nation's five group scores against its archetype's average.
 
 ## How to run
 

@@ -259,6 +259,61 @@
 </style>
 </head>
 <body>
+<style>
+  /* page-specific: nation picker, lane profile, PCA map, sortable 43-nation sheet */
+  .finder { display: grid; gap: 26px 40px; margin-top: 26px; }
+  @media (min-width: 900px) { .finder { grid-template-columns: minmax(0, 1fr) 21rem; } }
+  .pick { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; margin: 22px 0 4px;
+          font: 600 12px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .pick select { font: 600 16px/1.2 var(--sans); color: var(--ink); background: var(--card); border: 1px solid var(--edge);
+                 padding: 8px 10px; min-width: 0; max-width: 100%; }
+  .arch-btns { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 0; padding: 0; list-style: none; }
+  .arch-btns button { font: 600 13px/1.2 var(--sans); padding: 7px 10px; background: var(--card); color: var(--ink);
+                      border: 1px solid var(--edge); cursor: pointer; }
+  .arch-btns button:hover { border-color: var(--ink); }
+  .arch-btns button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--paper); }
+  .chart { width: 100%; touch-action: pan-y; }
+  .chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .chart text { font-family: var(--sans); font-size: 12px; fill: var(--muted); }
+  .chart .grid { stroke: var(--rule); }
+  .chart .zero { stroke: var(--edge); stroke-dasharray: 2 4; }
+  .chart .pt { fill: var(--paper); stroke: var(--edge); stroke-width: 1.4; }
+  .chart .pt.on { fill: var(--accent); stroke: var(--accent); }
+  .chart .pt.me { fill: var(--accent2); stroke: var(--ink); stroke-width: 2; }
+  .chart .lab { font-size: 11.5px; fill: var(--ink2); font-weight: 600; }
+  .chart .lab.me { fill: var(--accent2); font-size: 13px; }
+  .card { border: 2px solid var(--ink); background: var(--card); padding: 16px 18px 12px; align-self: start; }
+  .card .who { font: 800 44px/1 var(--display); text-transform: uppercase; margin: 0; letter-spacing: .01em; }
+  .card .full { font: 400 15px/1.3 var(--sans); color: var(--ink2); margin: 4px 0 0; }
+  .card .archn { font: 600 12px/1.3 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin: 10px 0 8px; }
+  .card .lanes text { font-size: 11.5px; }
+  .card .lanes .ln { font: 800 17px var(--display); fill: var(--muted); }
+  .card .lanes .gn { fill: var(--ink); font-weight: 600; font-size: 12.5px; }
+  .card .lanes .track { stroke: var(--rule); stroke-width: 7; }
+  .card .lanes .avg { stroke: var(--ink); stroke-width: 2; }
+  .card .lanes .mark { fill: var(--accent2); }
+  .card .lanes .val { font: 400 12px var(--mono); fill: var(--ink); }
+  .card .lanes .val.imp { fill: var(--muted); font-style: italic; }
+  .card .note { font: 400 13px/1.45 var(--sans); color: var(--muted); margin: 6px 0 0; }
+  .sheet43 { min-width: 640px; }
+  .sheet43 th, .sheet43 td { padding: 7px 10px; }
+  .sheet43 td.num, .sheet43 th.num { text-align: right; }
+  .sheet43 td.num { font: 400 14px var(--mono); }
+  .sheet43 td.imp { color: var(--muted); font-style: italic; }
+  .sheet43 td.archc { font-size: 13.5px; color: var(--muted); white-space: nowrap; }
+  .sheet43 button.nat { all: unset; cursor: pointer; font: 800 19px/1 var(--display); color: var(--ink); letter-spacing: .02em; }
+  .sheet43 button.nat:hover { color: var(--accent); text-decoration: underline; }
+  .sheet43 button.nat:focus-visible, .sheet43 button.sort:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .sheet43 button.sort { all: unset; cursor: pointer; }
+  .sheet43 button.sort:hover { color: var(--ink); text-decoration: underline; }
+  .sheet43 th[aria-sort="ascending"] button::after { content: " \2191"; color: var(--accent); }
+  .sheet43 th[aria-sort="descending"] button::after { content: " \2193"; color: var(--accent); }
+  .sheet43 tr.sel td { background: color-mix(in srgb, var(--accent2) 14%, transparent); }
+  .sheetwrap { max-height: 620px; overflow: auto; }
+  .sheetwrap thead th { position: sticky; top: 0; background: var(--card); z-index: 1; }
+  .heat-note, .fig-note { font-family: var(--sans); font-size: 14.5px; color: var(--muted); margin: 10px 0 0; max-width: 62ch; }
+</style>
+
 <div class="wrap">
   <header class="masthead">
     <div class="logo"><span class="dot" aria-hidden="true"></span>National strength profiles</div>
@@ -270,13 +325,12 @@
     <h1>43 nations sort into five athletics archetypes</h1>
 
     <p class="hero-sub">
-      Medal tables count the top three in each event and ignore the depth behind
-      them. Here every performance in the 2023 and 2024 World Athletics top-100
-      lists, 6,400 in all across 16 events and both sexes, is scored in WA points,
-      which put a shot put and a 5000 m on one scale. Each nation gets a strength
-      score in five discipline groups. K-means groups the 43 nations with enough
-      depth into five archetypes, and PCA maps them on two axes. The USA has the
-      highest score in three of the five groups and sits far from everyone on the map.
+      A medal table counts the top three in each event and nothing behind them. Scoring all
+      6,400 marks in the 2023 and 2024 World Athletics top-100 lists in WA points puts a shot
+      put and a 5000 m on one scale, and gives each nation a strength score in five discipline
+      groups. On those scores 43 nations fall into five shapes, from Kenya's distance-only
+      profile to the American one, which is the strongest in three groups and far from
+      everyone else on the map.
     </p>
 
     <div class="cta-row">
@@ -287,15 +341,15 @@
     <div class="claims">
       <div class="claim">
         <div class="n">6,400</div>
-        <p>performances: top 100 per event, 16 events, men and women, 2023 and 2024.</p>
+        <p>Performances: top 100 per event, 16 events, men and women, 2023 and 2024.</p>
       </div>
       <div class="claim">
         <div class="n">5</div>
-        <p>k-means archetypes over 43 nations and five discipline groups: sprints, middle distance, distance, jumps, throws.</p>
+        <p>K-means archetypes over 43 nations and five discipline groups: sprints, middle distance, distance, jumps, throws.</p>
       </div>
       <div class="claim">
         <div class="n">78%</div>
-        <p>of the variance on two principal components: overall depth (49%) and field events against endurance (29%).</p>
+        <p>Of the variance on two principal components: overall depth (49%) and field events against endurance (29%).</p>
       </div>
       <div class="claim">
         <div class="n">5.0</div>
@@ -312,132 +366,125 @@
     <p class="eyebrow">The idea</p>
     <h2>One scale for every event</h2>
     <p>
-      Seconds, meters and placings don't add up across events, so a country strong
-      in the hammer can't be compared with one strong in the 100 m on raw marks.
-      World Athletics points solve that: every mark in the top lists carries a
-      score meant to be comparable across events. Whether the tables are fair is
-      a separate question, which I tested in
-      <a href="https://lyhjeremy.github.io/athletics-scoring-fairness/">the scoring-tables audit</a>.
-      They are what the sport uses, so they are the currency here.
+      Seconds, meters and placings don't add up across events, so a country strong in the
+      hammer can't be compared with one strong in the 100 m on raw marks. Every mark in the
+      top lists carries a World Athletics score meant to be comparable across events, and
+      that is the currency here. Whether the tables are fair is a separate question, which I
+      tested in <a href="https://lyhjeremy.github.io/athletics-scoring-fairness/">the scoring-tables audit</a>.
     </p>
     <p>
-      A nation's strength in a discipline group is the mean of its five best WA
-      scores in that group. A nation needs at least three performances in a
-      group to get a score there, presence in at least three groups, and at least
+      A nation's strength in a group is the mean of its five best WA scores there. It needs
+      at least three performances in a group to get a score, presence in three groups and
       12 performances overall to be profiled. That leaves 43 nations.
     </p>
   </section>
 
   <section class="stop stop--key">
-    <p class="eyebrow">The heat sheet</p>
-    <h2>Two nations from each archetype</h2>
-    <p>
-      Strength scores (mean of the top five WA scores) for the two highest-ranked
-      nations in each cluster, from <code>tables/national_profiles.csv</code>. The
-      largest number in each row is the nation's best group.
-    </p>
-    <div class="tablewrap" role="region" aria-label="Strength scores by discipline for ten nations" tabindex="0">
-      <table class="heat">
-        <thead><tr><th>Nation</th><th class="num">Sprint</th><th class="num">Middle</th><th class="num">Distance</th><th class="num">Jump</th><th class="num">Throw</th></tr></thead>
-        <tbody>
-          <tr class="grp"><td colspan="6">All-round powerhouses</td></tr>
-          <tr><td class="nat">USA</td><td class="num">1293</td><td class="num">1269</td><td class="num">1282</td><td class="num">1267</td><td class="num best">1302</td></tr>
-          <tr><td class="nat">GBR</td><td class="num">1258</td><td class="num best">1264</td><td class="num">1249</td><td class="num">1209</td><td class="num">1190</td></tr>
-          <tr class="grp"><td colspan="6">Distance specialists</td></tr>
-          <tr><td class="nat">KEN</td><td class="num">1224</td><td class="num">1283</td><td class="num best">1297</td><td class="num imp">1105*</td><td class="num">1122</td></tr>
-          <tr><td class="nat">UGA</td><td class="num">1226</td><td class="num">1199</td><td class="num best">1267</td><td class="num imp">1105*</td><td class="num imp">1089*</td></tr>
-          <tr class="grp"><td colspan="6">Distance and middle powers</td></tr>
-          <tr><td class="nat">AUS</td><td class="num">1200</td><td class="num">1246</td><td class="num">1219</td><td class="num best">1246</td><td class="num">1198</td></tr>
-          <tr><td class="nat">FRA</td><td class="num">1210</td><td class="num best">1244</td><td class="num">1227</td><td class="num">1226</td><td class="num">1189</td></tr>
-          <tr class="grp"><td colspan="6">Throw and jump powers</td></tr>
-          <tr><td class="nat">POL</td><td class="num">1216</td><td class="num">1200</td><td class="num imp">1137*</td><td class="num">1210</td><td class="num best">1214</td></tr>
-          <tr><td class="nat">NZL</td><td class="num">1175</td><td class="num">1190</td><td class="num imp">1137*</td><td class="num">1214</td><td class="num best">1242</td></tr>
-          <tr class="grp"><td colspan="6">Emerging or single-event</td></tr>
-          <tr><td class="nat">BAH</td><td class="num best">1247</td><td class="num imp">1156*</td><td class="num imp">1137*</td><td class="num">1171</td><td class="num">1135</td></tr>
-          <tr><td class="nat">TTO</td><td class="num best">1216</td><td class="num imp">1156*</td><td class="num imp">1137*</td><td class="num">1121</td><td class="num">1120</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p class="heat-note">* No score in that group; filled with the lowest score any profiled nation has there. AUS ties jump and middle at 1246 after rounding; jump is higher by 0.8.</p>
-  </section>
-
-  <section class="stop">
     <p class="eyebrow">The map</p>
     <h2>Five archetypes and one outlier</h2>
     <p>
-      K-means (k = 5) on the z-scored strength matrix gives these groups. The
-      labels come from code that names each cluster after its strongest groups
-      relative to the other nations.
+      K-means (k = 5) on the z-scored strength matrix gives the groups, and PCA flattens the
+      five scores onto two axes. Going right is overall depth. Going up is field-event
+      strength, and going down is endurance. Pick a nation, or hover the map, to see its five
+      lanes; highlight an archetype to see who is in it.
     </p>
-    <ul class="arch">
+
+    <div class="pick">
+      <label for="sp-nat">Nation</label>
+      <select id="sp-nat"></select>
+    </div>
+    <ul class="arch-btns" id="sp-arch" aria-label="Highlight an archetype"></ul>
+
+    <div class="finder">
+      <figure style="margin:0">
+        <div class="chart" id="sp-map"></div>
+        <noscript>
+          <div class="plate"><img width="1500" height="1050" src="../figures/archetypes_map.png"
+            alt="PCA scatter of 43 nations colored by archetype. The USA sits alone at the far right of the first component; Kenya, Uganda and Ireland sit far below the rest on the second component." /></div>
+        </noscript>
+        <figcaption>PCA of the 43 z-scored profiles, computed in your browser from
+          <code>tables/national_profiles.csv</code>. It reproduces the 49% and 29% shares and the
+          PC1 scores (USA 5.0, Great Britain 2.8) of <code>analyze.py</code>.</figcaption>
+      </figure>
+      <div class="card" aria-live="polite">
+        <p class="who" id="sp-code">USA</p>
+        <p class="full" id="sp-full"></p>
+        <p class="archn" id="sp-archname"></p>
+        <div class="chart lanes" id="sp-lanes"></div>
+        <p class="note">Dot: the nation's strength (mean of its top five WA scores). Black tick: its
+          archetype's average. Each lane runs from the lowest to the highest of the 43 nations.
+          Grey italic values are fills for a group with no score.</p>
+      </div>
+    </div>
+
+    <p style="margin-top:26px">
+      The USA scores 5.0 on the first component. Great Britain is next at 2.8 and the rest of
+      the all-rounders sit between 1.7 and 2.2. The American summed strength (6,412) is 242
+      points ahead of Great Britain's, while Great Britain and the Netherlands are 34 apart.
+      Kenya, Uganda and Ireland sit lowest on the second axis: strong in middle distance and
+      distance, with no elite field-event presence at all.
+    </p>
+  </section>
+
+  <section class="stop">
+    <p class="eyebrow">The heat sheet</p>
+    <h2>All 43 nations, five groups</h2>
+    <p>
+      The matrix the clusters are computed from. Specialists show up as one or two strong
+      cells in a row; all-rounders as rows with no weak cells. Sort by any column, or pick a
+      nation to load it on the map.
+    </p>
+    <div class="tablewrap sheetwrap" role="region" aria-label="Strength scores by discipline group for 43 nations" tabindex="0">
+      <table class="sheet43" id="sp-sheet">
+        <thead><tr>
+          <th aria-sort="none"><button class="sort" data-k="0">Nation</button></th>
+          <th class="num" aria-sort="none"><button class="sort" data-k="1">Sprint</button></th>
+          <th class="num" aria-sort="none"><button class="sort" data-k="2">Middle</button></th>
+          <th class="num" aria-sort="none"><button class="sort" data-k="3">Distance</button></th>
+          <th class="num" aria-sort="none"><button class="sort" data-k="4">Jump</button></th>
+          <th class="num" aria-sort="none"><button class="sort" data-k="5">Throw</button></th>
+          <th class="num" aria-sort="descending"><button class="sort" data-k="7">Total</button></th>
+          <th aria-sort="none"><button class="sort" data-k="6">Archetype</button></th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="heat-note">From <code>tables/national_profiles.csv</code>. Italic values equal the
+      group minimum: a nation with no score in a group was filled with the lowest score of any
+      profiled nation there. Each row's best group is in bold.</p>
+
+    <ul class="arch" style="margin-top:26px">
       <li><b>All-round powerhouses (6).</b> USA, Great Britain, Netherlands, Italy, Jamaica, Canada. Above average in every group.</li>
       <li><b>Distance specialists (3).</b> Kenya, Uganda, Ireland. Highest on distance and middle distance, lowest of all clusters on jumps and throws.</li>
       <li><b>Distance and middle powers (10).</b> Australia, France, Germany, Norway, South Africa, Spain, Sweden, Japan, Belgium, Switzerland. Broad programs with an endurance lean.</li>
       <li><b>Throw and jump powers (16).</b> Poland, New Zealand, Cuba, China, Nigeria and eleven more. Slightly above average in the field and below average on the track.</li>
       <li><b>Emerging or single-event (8).</b> Bahamas, Hungary, Algeria, Trinidad and Tobago and four more. One group that stands out, such as sprints for the Bahamas or middle distance for Algeria, with little behind it.</li>
     </ul>
-    <p style="margin-top:22px">
-      The USA scores 5.0 on the first principal component. Great Britain is next
-      at 2.8 and the rest of the all-rounders sit between 1.7 and 2.2. Its summed
-      strength (6,412) is 242 points ahead of Great Britain, while Great Britain
-      and the Netherlands are 34 apart.
-    </p>
-    <figure>
-      <div class="plate">
-        <img width="1500" height="1050" src="../figures/archetypes_map.png" fetchpriority="high"
-          alt="PCA scatter of 43 nations colored by archetype. The USA sits alone at the far right of the first component; Kenya, Uganda and Ireland sit far below the rest on the second component." />
-      </div>
-      <figcaption>PC1 (49% of variance) is overall depth. PC2 (29%) separates field-event strength (up) from distance and middle distance (down).</figcaption>
-    </figure>
-  </section>
-
-  <section class="stop">
-    <p class="eyebrow">The matrix</p>
-    <h2>Where each country's points come from</h2>
-    <p>
-      The clusters are computed from this matrix. Specialists show up as one or
-      two strong cells in a row; all-rounders as rows with no weak cells.
-    </p>
-    <figure>
-      <div class="plate">
-        <img width="1275" height="1500" src="../figures/strength_heatmap.png" loading="lazy"
-          alt="Heatmap of 28 nations against five discipline groups, z-scored and grouped by archetype, with strong cells in red and weak cells in blue." />
-      </div>
-      <figcaption>Z-scored strength for the top 28 nations, grouped by cluster.</figcaption>
-    </figure>
-    <figure>
-      <div class="plate">
-        <img width="1350" height="780" src="../figures/archetype_fingerprints.png" loading="lazy"
-          alt="Grouped bar chart of the mean z-scored strength of each archetype in each discipline group. Distance specialists are high on distance and very low on jumps and throws." />
-      </div>
-      <figcaption>Each archetype's mean profile, which the cluster names describe.</figcaption>
-    </figure>
+    <p class="fig-note">The names come from a rule in <code>analyze.py</code> that labels each cluster after its strongest groups relative to the other nations.</p>
   </section>
 
   <section class="stop stop--warn">
     <p class="eyebrow">Limitations</p>
     <h2>What this doesn't show</h2>
     <p>
-      This measures how much elite strength a country has. How impressive that is
-      for its size or wealth is a different question, and large countries do well
-      on an absolute matrix. A per-capita or per-GDP view, where Jamaica and Norway
-      would likely stand out, is left for a later version.
+      This measures how much elite strength a country has. How impressive that is for its size
+      or wealth is a different question, and large countries do well on an absolute matrix. A
+      per-capita or per-GDP view, where Jamaica and Norway would likely stand out, is left for
+      a later version.
     </p>
     <p>
-      Two modeling choices shape the result. Averaging the top five scores
-      protects against one freak performance, but a country with a single
-      world-beater in a group scores modestly there. And a nation absent from a
-      group is filled with that group's minimum before z-scoring, which treats
-      absence as no elite presence. That is an imputation, and it pulls the
-      specialist clusters apart.
+      Two modeling choices shape the result. Averaging the top five scores protects against
+      one freak performance, but a country with a single world-beater in a group scores
+      modestly there. And a nation absent from a group is filled with that group's minimum
+      before z-scoring, which treats absence as no elite presence. That is an imputation, and
+      it pulls the specialist clusters apart.
     </p>
     <p>
-      Borderline assignments are not stable. Rerunning k-means on the committed
-      table with scikit-learn 1.6 moves three of 43 nations: Germany and South
-      Africa join the all-rounders and Mexico joins the emerging group. A
-      re-fetch of the raw top lists also once gave different values from the
-      committed table, and the cause was never found. The published numbers are
-      the ones in this repository.
+      Borderline assignments are not stable. Rerunning k-means on the committed table with
+      scikit-learn 1.6 moves three of 43 nations: Germany and South Africa join the
+      all-rounders and Mexico joins the emerging group. A re-fetch of the raw top lists also
+      once gave different values from the committed table, and the cause was never found. The
+      published numbers are the ones in this repository.
     </p>
   </section>
 
@@ -450,7 +497,7 @@
       <div class="spec"><dt>Strength</dt><dd>Mean of a nation's top five WA scores per discipline group, absent groups filled to the column minimum, then z-scored</dd></div>
       <div class="spec"><dt>Models</dt><dd>K-means (k = 5, scikit-learn) for archetypes; PCA for the two-axis map</dd></div>
       <div class="spec"><dt>Output</dt><dd><code>national_profiles.csv</code>: each nation's five strength scores, total and archetype</dd></div>
-      <div class="spec"><dt>Built with</dt><dd>Python, pandas, scikit-learn, matplotlib</dd></div>
+      <div class="spec"><dt>Built with</dt><dd>Python, pandas, scikit-learn, matplotlib; the map, lanes and sheet on this page are plain SVG and JavaScript</dd></div>
       <div class="spec"><dt>Companion</dt><dd><a href="https://lyhjeremy.github.io/athletics-scoring-fairness/">Scoring-tables audit</a>, which tests the points this analysis relies on</dd></div>
     </dl>
   </section>
@@ -477,5 +524,177 @@
     <p>Performance data from World Athletics top lists.</p>
   </footer>
 </div>
+
+<script>
+(function () {
+  // nation, sprint, middle, distance, jump, throw, archetype; from tables/national_profiles.csv
+  var D = [["USA",1292.8,1268.8,1281.6,1266.8,1302.0,"All-round powerhouses"],["GBR",1257.8,1264.0,1248.8,1209.0,1190.4,"All-round powerhouses"],["NED",1237.6,1227.4,1251.6,1214.4,1205.0,"All-round powerhouses"],["ITA",1216.4,1217.0,1209.2,1235.4,1254.8,"All-round powerhouses"],["JAM",1280.4,1209.0,1137.0,1244.8,1242.8,"All-round powerhouses"],["AUS",1199.6,1245.6,1219.2,1246.4,1198.0,"Distance & Middle powers"],["CAN",1232.8,1225.6,1234.4,1167.4,1239.0,"All-round powerhouses"],["FRA",1210.0,1243.8,1226.8,1225.6,1189.0,"Distance & Middle powers"],["GER",1209.6,1197.6,1214.2,1228.6,1229.8,"Distance & Middle powers"],["NOR",1210.4,1251.0,1186.2,1221.2,1183.4,"Distance & Middle powers"],["KEN",1223.8,1282.6,1296.8,1104.67,1121.67,"Distance specialists"],["RSA",1248.2,1203.0,1208.8,1182.6,1177.8,"Distance & Middle powers"],["ESP",1172.2,1246.0,1239.0,1216.2,1144.4,"Distance & Middle powers"],["SWE",1161.0,1202.8,1198.0,1234.2,1203.8,"Distance & Middle powers"],["JPN",1206.6,1186.33,1222.0,1194.2,1171.0,"Distance & Middle powers"],["POL",1216.0,1200.4,1137.0,1210.0,1213.8,"Throw & Jump powers"],["BEL",1203.6,1217.0,1223.8,1184.8,1140.8,"Distance & Middle powers"],["NZL",1175.0,1190.2,1137.0,1214.4,1242.2,"Throw & Jump powers"],["CUB",1212.2,1177.0,1137.0,1216.6,1199.6,"Throw & Jump powers"],["CHN",1188.6,1155.67,1152.2,1208.4,1211.0,"Throw & Jump powers"],["SUI",1202.8,1191.4,1219.2,1209.4,1089.25,"Distance & Middle powers"],["NGR",1246.0,1155.67,1137.0,1187.2,1178.2,"Throw & Jump powers"],["RUS",1183.2,1155.67,1137.0,1227.6,1197.0,"Throw & Jump powers"],["POR",1166.2,1199.4,1137.0,1219.2,1178.0,"Throw & Jump powers"],["BRA",1211.8,1155.67,1137.0,1179.6,1203.0,"Throw & Jump powers"],["UGA",1226.25,1198.6,1267.4,1104.67,1089.25,"Distance specialists"],["IND",1156.33,1155.67,1156.2,1203.2,1212.6,"Throw & Jump powers"],["CZE",1169.2,1173.0,1137.0,1186.6,1214.6,"Throw & Jump powers"],["FIN",1156.33,1168.0,1159.75,1196.0,1180.8,"Throw & Jump powers"],["IRL",1213.2,1230.2,1186.0,1104.67,1123.0,"Distance specialists"],["BLR",1157.25,1155.67,1137.0,1201.0,1202.0,"Throw & Jump powers"],["MEX",1171.6,1175.0,1174.0,1153.8,1172.6,"Throw & Jump powers"],["BAH",1247.0,1155.67,1137.0,1170.6,1135.33,"Emerging / single-event"],["COL",1185.8,1155.67,1137.0,1177.6,1169.6,"Throw & Jump powers"],["ROU",1174.67,1155.67,1137.0,1178.6,1170.4,"Throw & Jump powers"],["SLO",1156.33,1155.67,1161.0,1176.8,1163.6,"Throw & Jump powers"],["HUN",1175.8,1155.67,1137.0,1145.2,1171.8,"Emerging / single-event"],["ALG",1156.33,1225.2,1137.0,1167.25,1095.0,"Emerging / single-event"],["TTO",1215.6,1155.67,1137.0,1121.0,1120.2,"Emerging / single-event"],["VEN",1156.33,1166.0,1137.0,1170.2,1101.0,"Emerging / single-event"],["ECU",1166.2,1155.67,1137.0,1114.0,1145.0,"Emerging / single-event"],["PUR",1178.75,1155.67,1137.0,1141.75,1089.25,"Emerging / single-event"],["SRI",1170.33,1155.67,1137.0,1114.33,1096.6,"Emerging / single-event"]];
+  var G = ["Sprint", "Middle", "Distance", "Jump", "Throw"];
+  var NAME = {USA:"United States",GBR:"Great Britain",NED:"Netherlands",ITA:"Italy",JAM:"Jamaica",AUS:"Australia",
+    CAN:"Canada",FRA:"France",GER:"Germany",NOR:"Norway",KEN:"Kenya",RSA:"South Africa",ESP:"Spain",SWE:"Sweden",
+    JPN:"Japan",POL:"Poland",BEL:"Belgium",NZL:"New Zealand",CUB:"Cuba",CHN:"China",SUI:"Switzerland",NGR:"Nigeria",
+    RUS:"Russia",POR:"Portugal",BRA:"Brazil",UGA:"Uganda",IND:"India",CZE:"Czechia",FIN:"Finland",IRL:"Ireland",
+    BLR:"Belarus",MEX:"Mexico",BAH:"Bahamas",COL:"Colombia",ROU:"Romania",SLO:"Slovenia",HUN:"Hungary",ALG:"Algeria",
+    TTO:"Trinidad and Tobago",VEN:"Venezuela",ECU:"Ecuador",PUR:"Puerto Rico",SRI:"Sri Lanka"};
+  var ARCH = ["All-round powerhouses", "Distance specialists", "Distance & Middle powers", "Throw & Jump powers", "Emerging / single-event"];
+  var ARCH_LABEL = { "Distance & Middle powers": "Distance and middle powers", "Throw & Jump powers": "Throw and jump powers",
+    "Emerging / single-event": "Emerging or single-event" };
+  function an(a) { return ARCH_LABEL[a] || a; }
+  var n = D.length, k = 5;
+  var mins = [], maxs = [], mean = [], sd = [];
+  for (var j = 0; j < k; j++) {
+    var col = D.map(function (r) { return r[j + 1]; });
+    mins[j] = Math.min.apply(null, col); maxs[j] = Math.max.apply(null, col);
+    mean[j] = col.reduce(function (a, b) { return a + b; }, 0) / n;
+    sd[j] = Math.sqrt(col.reduce(function (a, b) { return a + (b - mean[j]) * (b - mean[j]); }, 0) / n);
+  }
+  var Z = D.map(function (r) { return r.slice(1, 6).map(function (v, j) { return (v - mean[j]) / sd[j]; }); });
+  // PCA: covariance of the z-scores, top two eigenvectors by power iteration with deflation
+  var C = [];
+  for (var a = 0; a < k; a++) { C[a] = []; for (var b = 0; b < k; b++) { var s = 0; for (var i = 0; i < n; i++) s += Z[i][a] * Z[i][b]; C[a][b] = s / (n - 1); } }
+  function eig(M) {
+    var v = [1, 1, 1, 1, 1], lam = 0;
+    for (var it = 0; it < 500; it++) {
+      var w = M.map(function (row) { return row.reduce(function (s, x, q) { return s + x * v[q]; }, 0); });
+      var nn = Math.sqrt(w.reduce(function (s, x) { return s + x * x; }, 0));
+      v = w.map(function (x) { return x / nn; }); lam = nn;
+    }
+    return { v: v, l: lam };
+  }
+  var e1 = eig(C), D1 = C.map(function (row, p) { return row.map(function (x, q) { return x - e1.l * e1.v[p] * e1.v[q]; }); });
+  var e2 = eig(D1), tr = 0;
+  for (var t = 0; t < k; t++) tr += C[t][t];
+  if (e1.v.reduce(function (s, x) { return s + x; }, 0) < 0) e1.v = e1.v.map(function (x) { return -x; });
+  if (e2.v[3] < 0) e2.v = e2.v.map(function (x) { return -x; });
+  var P = Z.map(function (z) { return [z.reduce(function (s, x, q) { return s + x * e1.v[q]; }, 0), z.reduce(function (s, x, q) { return s + x * e2.v[q]; }, 0)]; });
+  var share = [e1.l / tr, e2.l / tr];
+  var archMean = {};
+  ARCH.forEach(function (A) {
+    var rows = D.filter(function (r) { return r[6] === A; });
+    archMean[A] = G.map(function (_, j) { return rows.reduce(function (s, r) { return s + r[j + 1]; }, 0) / rows.length; });
+  });
+
+  var sel = 0, hiArch = null;
+  var NS = "http://www.w3.org/2000/svg";
+  function el(tg, at, p) { var e = document.createElementNS(NS, tg); for (var q in at) e.setAttribute(q, at[q]); if (p) p.appendChild(e); return e; }
+  function tx(s, at, p) { var e = el("text", at, p); e.textContent = s; return e; }
+  var mapBox = document.getElementById("sp-map"), lanes = document.getElementById("sp-lanes"), pick = document.getElementById("sp-nat");
+
+  function drawMap() {
+    var W = Math.max(300, mapBox.clientWidth), small = W < 520, H = Math.round(W * (small ? 0.9 : 0.66));
+    var m = { l: 34, r: 14, t: 14, b: 40 }, pw = W - m.l - m.r, ph = H - m.t - m.b;
+    var x0 = -3.2, x1 = 5.6, y0 = -4.2, y1 = 2.6;
+    var X = function (v) { return m.l + (v - x0) / (x1 - x0) * pw; }, Y = function (v) { return m.t + (1 - (v - y0) / (y1 - y0)) * ph; };
+    mapBox.textContent = "";
+    var svg = el("svg", { viewBox: "0 0 " + W + " " + H, role: "img",
+      "aria-label": "Principal-component map of 43 nations. The USA sits far to the right on overall depth; Kenya, Uganda and Ireland sit at the bottom, on the endurance side." }, mapBox);
+    [-2, 0, 2, 4].forEach(function (v) { el("line", { x1: X(v), x2: X(v), y1: m.t, y2: m.t + ph, "class": v ? "grid" : "zero" }, svg); tx(String(v), { x: X(v), y: m.t + ph + 15, "text-anchor": "middle" }, svg); });
+    [-4, -2, 0, 2].forEach(function (v) { el("line", { x1: m.l, x2: m.l + pw, y1: Y(v), y2: Y(v), "class": v ? "grid" : "zero" }, svg); tx(String(v), { x: m.l - 6, y: Y(v) + 4, "text-anchor": "end" }, svg); });
+    tx("Overall depth, PC1 (" + Math.round(share[0] * 100) + "%) →", { x: m.l + pw, y: H - 6, "text-anchor": "end" }, svg);
+    tx("↑ Field events, PC2 (" + Math.round(share[1] * 100) + "%)", { x: m.l + 6, y: m.t + 12 }, svg);
+    tx("↓ Endurance", { x: m.l + 6, y: m.t + ph - 8 }, svg);
+    var placed = [];
+    function fits(bx) { return placed.every(function (p) { return bx.x + bx.w < p.x || p.x + p.w < bx.x || bx.y + bx.h < p.y || p.y + p.h < bx.y; }); }
+    var order = D.map(function (_, i) { return i; }).sort(function (a, b) { return (a === sel) - (b === sel); });
+    order.forEach(function (i) {
+      var on = hiArch && D[i][6] === hiArch, me = i === sel;
+      el("circle", { cx: X(P[i][0]), cy: Y(P[i][1]), r: me ? 7 : on ? 5 : 4, "class": "pt" + (on ? " on" : "") + (me ? " me" : "") }, svg);
+    });
+    var labelled = [sel].concat(D.map(function (_, i) { return i; }).filter(function (i) { return i !== sel && hiArch && D[i][6] === hiArch; }));
+    if (!hiArch) labelled = labelled.concat([0, 10].filter(function (i) { return i !== sel; }));
+    labelled.forEach(function (i) {
+      var x = X(P[i][0]) + 8, y = Y(P[i][1]) + 4, w = 30, anchor = "start";
+      if (x + w > W) { x = X(P[i][0]) - 8; anchor = "end"; }
+      var bx = { x: anchor === "end" ? x - w : x, y: y - 11, w: w, h: 13 };
+      if (i === sel || fits(bx)) { placed.push(bx); tx(D[i][0], { x: x, y: y, "text-anchor": anchor, "class": "lab" + (i === sel ? " me" : "") }, svg); }
+    });
+    var hit = el("rect", { x: 0, y: 0, width: W, height: H, fill: "transparent" }, svg);
+    hit.addEventListener("pointermove", function (ev) {
+      var r = svg.getBoundingClientRect(), px = (ev.clientX - r.left) * (W / r.width), py = (ev.clientY - r.top) * (H / r.height);
+      var best = -1, bd = 400;
+      P.forEach(function (p, i) { var dx = X(p[0]) - px, dy = Y(p[1]) - py, d = dx * dx + dy * dy; if (d < bd) { bd = d; best = i; } });
+      if (best >= 0 && best !== sel) select(best);
+    });
+  }
+  function drawLanes() {
+    var r = D[sel], A = r[6], W = Math.max(260, lanes.clientWidth), lh = 40, H = lh * 5 + 6;
+    var m = { l: 92, r: 52 }, pw = W - m.l - m.r;
+    lanes.textContent = "";
+    var svg = el("svg", { viewBox: "0 0 " + W + " " + H, role: "img",
+      "aria-label": NAME[r[0]] + " strength by group: " + G.map(function (g, j) { return g + " " + Math.round(r[j + 1]); }).join(", ") }, lanes);
+    G.forEach(function (g, j) {
+      var y = 6 + lh * j + lh / 2, f = function (v) { return m.l + (v - mins[j]) / (maxs[j] - mins[j]) * pw; };
+      var imp = r[j + 1] === mins[j];
+      tx(String(j + 1), { x: 2, y: y + 6, "class": "ln" }, svg);
+      tx(g, { x: 20, y: y + 4, "class": "gn" }, svg);
+      el("line", { x1: m.l, x2: m.l + pw, y1: y, y2: y, "class": "track" }, svg);
+      var am = archMean[A][j];
+      el("line", { x1: f(am), x2: f(am), y1: y - 9, y2: y + 9, "class": "avg" }, svg);
+      el("circle", { cx: f(r[j + 1]), cy: y, r: 6.5, "class": "mark" }, svg);
+      tx(Math.round(r[j + 1]) + (imp ? "*" : ""), { x: W - 2, y: y + 4, "text-anchor": "end", "class": "val" + (imp ? " imp" : "") }, svg);
+    });
+  }
+  function select(i) {
+    sel = i; pick.value = String(i);
+    var r = D[i];
+    document.getElementById("sp-code").textContent = r[0];
+    document.getElementById("sp-full").textContent = NAME[r[0]] + ". PC1 " + P[i][0].toFixed(1) + ", PC2 " + P[i][1].toFixed(1) + ". Total " + Math.round(r.slice(1, 6).reduce(function (a, b) { return a + b; }, 0)).toLocaleString("en-US") + ".";
+    document.getElementById("sp-archname").textContent = an(r[6]);
+    drawMap(); drawLanes();
+    rowsEls.forEach(function (tr) { tr.classList.toggle("sel", +tr.dataset.i === i); });
+  }
+  D.forEach(function (r, i) { var o = document.createElement("option"); o.value = String(i); o.textContent = NAME[r[0]] + " (" + r[0] + ")"; pick.appendChild(o); });
+  pick.addEventListener("change", function () { select(+pick.value); });
+  var ab = document.getElementById("sp-arch");
+  ARCH.forEach(function (A) {
+    var li = document.createElement("li"), b = document.createElement("button");
+    var cnt = D.filter(function (r) { return r[6] === A; }).length;
+    b.type = "button"; b.textContent = an(A) + " (" + cnt + ")"; b.setAttribute("aria-pressed", "false");
+    b.addEventListener("click", function () {
+      hiArch = hiArch === A ? null : A;
+      ab.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", "false"); });
+      if (hiArch) b.setAttribute("aria-pressed", "true");
+      drawMap();
+    });
+    li.appendChild(b); ab.appendChild(li);
+  });
+
+  // the 43-nation sheet
+  var tbody = document.querySelector("#sp-sheet tbody"), rowsEls = [];
+  D.forEach(function (r, i) {
+    var tr = document.createElement("tr"); tr.dataset.i = i;
+    var vals = r.slice(1, 6), best = vals.indexOf(Math.max.apply(null, vals));
+    var tot = vals.reduce(function (a, b) { return a + b; }, 0);
+    var h = "<td><button type=\"button\" class=\"nat\" aria-label=\"Show " + NAME[r[0]] + " on the map\">" + r[0] + "</button></td>";
+    vals.forEach(function (v, j) {
+      var imp = v === mins[j];
+      h += "<td class=\"num" + (imp ? " imp" : "") + "\"" + (j === best ? " style=\"font-weight:700;color:var(--ink)\"" : "") + ">" + Math.round(v) + "</td>";
+    });
+    h += "<td class=\"num\">" + Math.round(tot).toLocaleString("en-US") + "</td><td class=\"archc\">" + an(r[6]) + "</td>";
+    tr.innerHTML = h; tr.dataset.tot = tot;
+    tr.querySelector("button").addEventListener("click", function () { select(i); document.getElementById("sp-nat").scrollIntoView({ block: "start" }); });
+    tbody.appendChild(tr); rowsEls.push(tr);
+  });
+  document.querySelectorAll("#sp-sheet .sort").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var th = b.parentNode, key = +b.dataset.k, cur = th.getAttribute("aria-sort");
+      var dir = cur === "descending" ? "ascending" : cur === "ascending" ? "descending" : (key === 0 || key === 6 ? "ascending" : "descending");
+      document.querySelectorAll("#sp-sheet th").forEach(function (h) { h.setAttribute("aria-sort", "none"); });
+      th.setAttribute("aria-sort", dir);
+      var f = dir === "ascending" ? 1 : -1;
+      rowsEls.sort(function (x, y) {
+        var a = D[+x.dataset.i], c = D[+y.dataset.i];
+        if (key === 7) return f * (x.dataset.tot - y.dataset.tot);
+        if (key === 0 || key === 6) return f * String(a[key]).localeCompare(String(c[key])) || (y.dataset.tot - x.dataset.tot);
+        return f * (a[key] - c[key]);
+      });
+      rowsEls.forEach(function (tr) { tbody.appendChild(tr); });
+    });
+  });
+  var rt; window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(function () { drawMap(); drawLanes(); }, 120); });
+  select(0);
+  window.__sp = { share: share, P: P };
+})();
+</script>
 </body>
 </html>
